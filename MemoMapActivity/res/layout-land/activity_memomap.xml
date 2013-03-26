@@ -1,0 +1,48 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_fragments_layout"
+    android:baselineAligned="false"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    tools:context=".MainActivityFragments" >
+
+    <FrameLayout
+        android:id="@+id/fragment_mapcontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
+    
+	    <fragment
+	        xmlns:android="http://schemas.android.com/apk/res/android"
+        	xmlns:map="http://schemas.android.com/apk/res-auto" 
+	        android:id="@+id/top_fragment"        
+	        android:layout_height="match_parent"
+    	   	android:layout_width="match_parent"
+	        class="com.google.android.gms.maps.MapFragment"
+	        map:mapType="hybrid"
+	        map:uiCompass="false"
+	        map:uiRotateGestures="false"
+	        map:uiScrollGestures="true"
+	        map:uiTiltGestures="false"
+	        map:uiZoomControls="true"
+	        map:uiZoomGestures="true" />
+	</FrameLayout>
+	    
+    <FrameLayout
+        android:id="@+id/fragment_bottomcontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+	    
+		<fragment
+            android:id="@+id/bottom_fragment"
+            android:name="com.rpcarrig.memomapa.ViewMemoListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_viewmemolist" />
+    </FrameLayout>
+
+</LinearLayout>

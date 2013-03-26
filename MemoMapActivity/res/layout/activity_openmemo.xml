@@ -1,0 +1,195 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mm_rl_main_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    tools:context=".CreateMemoActivity" >
+
+    <LinearLayout
+        android:id="@+id/mm_ll_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+
+        <Spinner
+            android:id="@+id/memoSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_om_Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:text="@string/title"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/secondary_text_dark"
+                android:textSize="16sp" />
+
+           	<TextView
+           	    android:id="@+id/tv_om_TitleContents"
+           	    android:layout_width="match_parent"
+           	    android:layout_height="0dp"
+           	    android:layout_margin="6dp"
+           	    android:layout_weight="1"
+           	    android:text="@string/nullstring"
+           	    android:textColor="@android:color/white"
+           	    android:textIsSelectable="true"
+           	    android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/tv_om_Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:text="@string/body"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/secondary_text_dark"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_om_BodyContents"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="6dp"
+                android:layout_weight="1"
+                android:lines="5"
+                android:text="@string/nullstring"
+                android:textColor="@android:color/primary_text_dark"
+                android:textIsSelectable="true"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tv_Longitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/longitude"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/secondary_text_dark"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_LongValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/nullstring"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_Latitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/latitude"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/secondary_text_dark"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_LatValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/nullstring"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tv_radius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/radius"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/secondary_text_dark"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_radiusvalue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/nullstring"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@android:style/ButtonBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:divider="?android:attr/dividerVertical"
+        android:dividerPadding="8dp"
+        android:height="48dp"
+        android:orientation="horizontal"
+        android:showDividers="middle" >
+
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:onClick="clickEdit"            
+            android:text="@string/edit"
+            android:textAllCaps="true"/>
+        
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:onClick="clickOk"
+            android:text="@string/ok"
+            android:textAllCaps="true" />
+        
+
+    </LinearLayout>
+
+</RelativeLayout>

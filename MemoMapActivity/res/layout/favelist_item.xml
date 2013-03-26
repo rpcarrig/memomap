@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_height="wrap_content" 
+   android:gravity="left|center"
+   android:layout_width="wrap_content" 
+   android:paddingBottom="5dp"
+   android:paddingTop="5dp" 
+   android:paddingLeft="5dp">
+
+    <ImageView android:id="@+id/avatar"
+       android:contentDescription="@string/app_name"
+       android:height="36dp"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginRight="6dp"
+       android:src="@drawable/ic_launcher" />
+    
+    <LinearLayout
+       android:orientation="vertical"
+       android:layout_width="0dip"
+       android:layout_weight="1"
+       android:layout_height="fill_parent">
+        
+		<TextView
+		    android:id="@+id/fl_Title"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:gravity="center"
+		    android:textColor="@android:color/primary_text_dark"
+		    android:textIsSelectable="false"
+		    android:textSize="20sp" />
+		
+	    <TextView
+	        android:id="@+id/fl_Body"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:textColor="@android:color/secondary_text_dark"
+	        android:textIsSelectable="false"
+	        android:textSize="14sp" />
+
+    </LinearLayout>
+    
+    <TextView android:id="@+id/fl_DistanceTo"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textColor="@color/White"
+        android:textSize="24sp"
+        android:textIsSelectable="false"/>
+</LinearLayout>

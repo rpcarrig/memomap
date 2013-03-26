@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="add_fave">Add Favorite</string>
+    <string name="app_name">MemoMap</string>
+    <string name="app_version">Alpha v0.39 (23 Mar 2013)</string>
+    <string name="address">Address</string>
+    <string name="address_hint">Enter an address</string>
+    <string name="body">Body</string>
+	<string name="body_hint">Compose your memo here.</string>
+	<string name="cancel">Cancel</string>
+	<string name="choose_fave">Favorite Places</string>
+    <string name="continue_">Continue</string>
+    <string name="create_here">Use My Location</string>
+    <string name="create_memo">Create Memo</string>
+    <string name="create_memo_msg">Where would you like to set this memo?</string>
+    <string name="delete_memo">Delete Memo</string>
+    <string name="edit">Edit Memo</string>
+    <string name="explain">The memo\'s radius determines that maximum distance you can be from a memo in order to be reminded. The smaller the radius, the closer you must approach the set location before the notification appears.</string>
+    <string name="favorites">Favorites</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="latitude">Latitude</string>
+    <string name="less_than">&lt;</string>
+    <string name="location_name">Location Name</string>
+    <string name="longitude">Longitude</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="memo">Memo</string>
+    <string name="memo_title">Memo Title</string>
+    <string name="nullstring">null</string>
+    <string name="my_memos">My Memos</string>
+    <string name="menu_settings">Settings</string>
+    <string name="ok">OK</string>
+    <string name="radius">Radius</string>
+    <string name="radius_a">25m</string>
+    <string name="radius_b">50m</string>
+    <string name="radius_c">100m</string>
+    <string name="radius_info">What does this mean?</string>
+    <string name="remember_loc">Check here to save this location to your favorites list.</string>
+    <string name="reset_view">Reset View</string>
+    <string name="save">Save Memo</string>
+    <string name="save_and_return">Save and Return</string>
+    <string name="saved_memos">Saved Memos</string>
+    <string name="search">Search</string>
+    <string name="search_addr">Search by Address</string>
+    <string name="service_name">MemoMap Location Service</string>
+    <string name="settings">Settings</string>
+    <string name="title">Title</string>
+    <string name="view_faves">Favorite Places</string>
+    <string name="view_memos">View Memos</string>
+
+</resources>
