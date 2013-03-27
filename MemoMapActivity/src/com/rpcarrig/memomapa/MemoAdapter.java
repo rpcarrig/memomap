@@ -14,7 +14,6 @@ package com.rpcarrig.memomapa;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
@@ -25,39 +24,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MemoAdapter extends ArrayAdapter<Memo>{
-	// Store the class name for the debug log.
-	// private static final String CLASS = "MemoAdapter";
-	private int fillColor   = 0x100000A0,
-				strokeColor = Color.BLUE,
-				strokeWidth = 2;	
+	private static final String TAG = "MemoAdapter";
 	
 	private ArrayList<Memo> memoArray; 
-	private Context currentContext;		
-	private FragmentManager manager;
-	private Location currentLocation;
+	private Context currentContext;
+	private LatLng location;
 
-	/**
-	 * The only constructor for a MemoAdapter.
-	 * @param currentContext: the current currentContext
-	 * @param rId:     the resource ID for the layout file
-	 * @param items:   the ArrayList of memo objects
-	 * @param loc:	   a location
-	 */
-	public MemoAdapter(Context context, int rId, ArrayList<Memo> items, 
-			Location loc, FragmentManager fm){
+	
+	public MemoAdapter(Context context, int rId, ArrayList<Memo> items, Location loc){
 		super(context, rId, items);	
 		Log.d("MemoAdapter", "constructor");
 		currentContext  = context;
-		currentLocation = loc;
-		manager			= fm;
+		if(loc != null)
+			location = new LatLng(loc.getLatitude(), loc.getLongitude());
+		else location = new LatLng(-98.5795, 39.8282);
 		memoArray       = items;
 	}
 	
@@ -84,16 +67,7 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 	 * it stores the calculated distance by setting it to the memo's distance.
 	 * @param memo: the memo to calculate and set the distance
 	 */
-	private void setDistance(Memo memo){
-		float[] results = { -1, -1, -1 };
-		Location.distanceBetween(
-				currentLocation.getLatitude(),
-				currentLocation.getLongitude(),
-				memo.getLatitude(), 
-				memo.getLongitude(),
-				results);
-		memo.setDistance(results[0]);
-	}
+
 	
 	/**
 	 * setDistColor affects the color of the text on the ListView item 
@@ -134,29 +108,7 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 		
 		Memo memo = memoArray.get(position);
 		if(memo != null){
-			setDistance(memo);
-			double d = memo.getDistance();
-
-			GoogleMap mapFragment = ((MapFragment)manager
-					.findFragmentById(R.id.top_fragment)).getMap();
-			//BitmapDescriptor bd = BitmapDescriptorFactory
-			//		.fromResource(R.drawable.ic_launcher);
-			
-			Marker mark = mapFragment.addMarker(new MarkerOptions()
-			//	.icon(bd)
-				.position(memo.getLatLong())
-				.snippet(memo.getMemoTitle())
-				.title(memo.getMemoBody()));
-			memo.setMarker(mark);
-			
-			Circle circle = mapFragment.addCircle(new CircleOptions()
-					.center(memo.getLatLong())
-					.strokeWidth(strokeWidth)
-					.strokeColor(strokeColor)
-					.fillColor(fillColor)
-					.radius(memo.getRadius()));
-			memo.setCircle(circle);
-			
+			double d = memo.getDistance(location);
 			TextView 
 				title      = (TextView) view.findViewById(R.id.ml_Title),
 				body       = (TextView) view.findViewById(R.id.ml_Body),

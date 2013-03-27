@@ -2,30 +2,16 @@
     <item android:id="@+id/menu_creatememo"
         android:title="@string/create_memo"
         android:showAsAction="always|withText"
-         android:icon="@android:drawable/ic_menu_edit">
-	
-        <menu>
-            <item android:id="@+id/menu_createhere"
-                android:title="@string/create_here" 
-                android:icon="@android:drawable/ic_menu_mylocation"/>
-            <item android:id="@+id/menu_searchaddr"
-                android:title="@string/search_addr" 
-                android:icon="@android:drawable/ic_dialog_map"/>
-            <item android:id="@+id/menu_choosefave"
-				android:title="@string/choose_fave" 
-				android:icon="@android:drawable/ic_menu_myplaces"/>
-        </menu>       
-    </item>
+        android:icon="@android:drawable/ic_menu_edit" />
     
      <item android:id="@+id/menu_resetview"
         android:title="@string/reset_view"
-        android:showAsAction="always" 
+        android:showAsAction="ifRoom|collapseActionView" 
         android:icon="@android:drawable/ic_menu_mapmode"/>
-    
-    
+
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
         android:orderInCategory="100" 
-        android:showAsAction="ifRoom" 
+        android:showAsAction="never|ifRoom" 
         android:icon="@android:drawable/ic_menu_preferences"/>
 </menu>

@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="8dp"
+        android:paddingTop="4dp"
+        android:text="@string/memo"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/newmemo_body"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/continue_button"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_Body"
+        android:layout_margin="6dp"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="@string/body_hint"
+        android:inputType="textMultiLine"
+        android:lines="5"
+        android:maxLength="1000"
+        android:minLines="2"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/continue_button"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="continueMemo"
+        android:text="@string/continue_"
+        android:textAllCaps="true" />
+
+</RelativeLayout>

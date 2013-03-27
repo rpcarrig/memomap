@@ -18,7 +18,11 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MemoMapService extends Service implements LocationListener {
@@ -101,14 +105,9 @@ public class MemoMapService extends Service implements LocationListener {
 	}
 	
 	@Override
-	public void onProviderDisabled(String arg0) {
-		Log.d(CLASS, "onProviderDisabled");
-	}
-
+	public void onProviderDisabled(String arg0) { }
 	@Override
-	public void onProviderEnabled(String arg0) {
-		Log.d(CLASS, "onProviderEnabled");
-	}
+	public void onProviderEnabled(String arg0) { }
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId){
@@ -148,7 +147,7 @@ public class MemoMapService extends Service implements LocationListener {
 		else return -1;
 	}
 		
-	public Location geoLocation(){
+	public Location getFreshLocation(){
 		Log.d(CLASS, "geoLocation");
 		if( !isGpsEnabled && !isNetworkEnabled){
 			//no GPS or network
@@ -184,6 +183,8 @@ public class MemoMapService extends Service implements LocationListener {
 		return location;
 	}
 	
+	public Location getLocation(){ return location; }
+	
 	public void startGps(){
 		Log.d(CLASS, "startGps");
 		try{
@@ -192,6 +193,8 @@ public class MemoMapService extends Service implements LocationListener {
 			isNetworkEnabled	= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
+
+			location = getFreshLocation();
 		}
 		catch (Exception e){
 			e.printStackTrace();

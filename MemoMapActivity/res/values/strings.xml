@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="m">25 m</string>
+    <string name="mm">100 m</string>
+    <string name="k">5 km</string>
     <string name="add_fave">Add Favorite</string>
     <string name="app_name">MemoMap</string>
     <string name="app_version">Alpha v0.39 (23 Mar 2013)</string>
@@ -14,6 +17,8 @@
     <string name="create_here">Use My Location</string>
     <string name="create_memo">Create Memo</string>
     <string name="create_memo_msg">Where would you like to set this memo?</string>
+    <string name="default_">Default</string>
+    <string name="default_rad">Default Radius</string>
     <string name="delete_memo">Delete Memo</string>
     <string name="edit">Edit Memo</string>
     <string name="explain">The memo\'s radius determines that maximum distance you can be from a memo in order to be reminded. The smaller the radius, the closer you must approach the set location before the notification appears.</string>

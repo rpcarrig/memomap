@@ -57,9 +57,6 @@ public class CreateMemoActivity extends Activity {
 		
 		longitude.setText(lon.toString());
 		latitude.setText(lat.toString());
-	    
-		//Intent gpsIntent = new Intent(this, MemoMapService.class);
-		//bindService(gpsIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
