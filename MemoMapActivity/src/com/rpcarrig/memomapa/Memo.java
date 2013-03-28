@@ -9,7 +9,6 @@ package com.rpcarrig.memomapa;
 
 import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.location.Location;
 import android.text.format.Time;
 
@@ -74,7 +73,6 @@ public class Memo {
 				m.radius, m.memoDate);
 	}
 	
-	@SuppressLint("DefaultLocale")
 	public String toString(){
 		String s;
 		s = String.format(Locale.getDefault(), "[%s] %s -- (%f, %f)", 
