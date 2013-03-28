@@ -15,9 +15,6 @@ public class NewMemoLocFragment extends Fragment implements OnSeekBarChangeListe
 	private final static String CLASS = "ContentFragment";
 	private final static int DEFAULT_PROGRESS = 75;
 	
-	private String memoLoc;
-	private int radius;
-	private boolean saveFave;
 	private CheckBox fave;
 	private SeekBar seek;
 	private TextView memo;
@@ -33,7 +30,7 @@ public class NewMemoLocFragment extends Fragment implements OnSeekBarChangeListe
 	
 	@Override
 	public void onPause(){
-		memoLoc = memo.getText().toString();
+		
 	}
 	
 	@Override

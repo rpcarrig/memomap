@@ -11,14 +11,8 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
-import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Address;
 import android.location.Geocoder;
@@ -33,11 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -86,19 +77,15 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			}
 		}
 	};
-	/**
+	
 	ServiceConnection serviceConnection = new ServiceConnection(){
 		@Override
 		public void onServiceConnected(ComponentName name,
 				IBinder service){
 			Log.d(TAG, "ServiceConnection: " + name);
 			GpsBinder binder = (GpsBinder)service;
-			
 			memoMapService = binder.getService();
 			gpsBound = true;
-			
-			location = memoMapService.getFreshLocation();
-			latLongLocation = new LatLng(location.getLatitude(), location.getLongitude());
 		}
 
 		@Override
@@ -107,7 +94,6 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			gpsBound = false;
 		}
 	};
-	*/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate");
@@ -137,6 +123,7 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
 
 			location = getFreshLocation();
+			latLongLocation = new LatLng(location.getLatitude(), location.getLongitude());
 		}
 		catch (Exception e){
 			e.printStackTrace();
