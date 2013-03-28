@@ -9,15 +9,14 @@ package com.rpcarrig.memomapa;
 
 import java.util.Locale;
 
-import com.google.android.gms.maps.model.Circle;
+import android.annotation.SuppressLint;
+import android.location.Location;
+import android.text.format.Time;
+
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.annotation.SuppressLint;
-import android.location.Location;
-import android.text.format.Time;
 
 public class Memo {
 	private int id,
@@ -29,11 +28,11 @@ public class Memo {
 	private double distance,
 				   latitude,
 				   longitude;
+	private Marker marker;
 	private String memoBody,
 				   memoDate,
 				   memoTitle;
 
-		
 	public Memo(){ }
 	
 	public Memo(String title, String body, double lat, double lon, int rad){
@@ -58,6 +57,23 @@ public class Memo {
 		memoTitle = title;
 	}
 	
+	public Memo(int i, String title, String body, double lat, double lon, 
+			int rad, String date){
+		distance  = -1;
+		id		  = i;
+		latitude  = lat;
+		longitude = lon;
+		radius 	  = rad;
+		memoBody  = body;
+		memoDate  = date;
+		memoTitle = title;
+	}
+	
+	public static Memo copy(Memo m){
+		return new Memo(m.id, m.memoTitle, m.memoBody, m.latitude, m.longitude,
+				m.radius, m.memoDate);
+	}
+	
 	@SuppressLint("DefaultLocale")
 	public String toString(){
 		String s;
@@ -76,7 +92,9 @@ public class Memo {
 	public int getRadius()		{ return radius; 	}
 	public double getLatitude()	{ return latitude; 	}
 	public double getLongitude(){ return longitude; }
+	public double getDistance() { return distance;  }
 	public double getDistance(LatLng loc){
+		if(loc == null){ loc = new LatLng(0, 0); }
 		float[] results = { -1, -1, -1 };
 		Location.distanceBetween(
 				loc.latitude,
@@ -86,7 +104,7 @@ public class Memo {
 				results);
 		setDistance(results[0]);
 		return distance;
-	}	
+	}
 	public LatLng getLatLong()  { return new LatLng(latitude, longitude); }
 	public CircleOptions getCircleOptions() {
 		return new CircleOptions()
@@ -97,21 +115,19 @@ public class Memo {
 			.radius(getRadius()); 
 	}
 	
+	public Marker getMarker(){ return marker; }
 	public MarkerOptions getMarkerOptions()   {
 		return new MarkerOptions()
 			.position(getLatLong())
 			.snippet(memoTitle)
 			.title(memoBody);
 	}
-	
-
-	
 	public void setDistance(double d) { distance = d;  }
 	public void setId(int i)		  { id = i; 	   }
 	public void setLatitude(double l) { latitude = l;  }
 	public void setLongitude(double l){ longitude = l; }
 	public void setRadius(int r)	  { radius = r;    }
-
+	public void setMarker(Marker m)	  { marker = m;    }
 	public void setMemoBody(String b) { memoBody = b;  }
 	public void setMemoDate(String d) { memoDate = d;  }
 	public void setMemoTitle(String t){ memoTitle = t; }

@@ -23,7 +23,7 @@ public class ViewFavoritesActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_viewfavelist);
-		FaveHandler dbHandler = FaveHandler.getInstance(MemoMap.getInstance());
+		DataHandler dataHandler = DataHandler.getInstance(MemoMap.getInstance());
 		
 		Bundle bundle = getIntent().getExtras();
 		if(bundle != null){
@@ -36,7 +36,7 @@ public class ViewFavoritesActivity extends Activity {
 
 	    ListView listView = (ListView) findViewById(R.id.faveList);
 		if(listView != null){
-			faves = dbHandler.getAllFaves();
+			faves = dataHandler.getAllFaves();
 				listView.setAdapter(new FaveAdapter(
 					getApplicationContext(), 0, faves, 0, 0));
 			OnItemClickListener listen = new OnItemClickListener() {

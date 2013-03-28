@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +33,12 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 	private LatLng location;
 
 	
-	public MemoAdapter(Context context, int rId, ArrayList<Memo> items, Location loc){
+	public MemoAdapter(Context context, int rId, ArrayList<Memo> items, LatLng loc){
 		super(context, rId, items);	
-		Log.d("MemoAdapter", "constructor");
+		Log.d(TAG, "constructor");
 		currentContext  = context;
 		if(loc != null)
-			location = new LatLng(loc.getLatitude(), loc.getLongitude());
+			location = new LatLng(loc.latitude, loc.longitude);
 		else location = new LatLng(-98.5795, 39.8282);
 		memoArray       = items;
 	}
@@ -61,15 +60,6 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 	}
 	
 	/**
-	 * setDistance accepts a Memo object and gets its latitude and longitude,
-	 * then calls Location.distanceBetween to calculate the distance in meters
-	 * (as a double) between the currentLocation and the memo's location. Then,
-	 * it stores the calculated distance by setting it to the memo's distance.
-	 * @param memo: the memo to calculate and set the distance
-	 */
-
-	
-	/**
 	 * setDistColor affects the color of the text on the ListView item 
 	 * indicating its distance from the currentLocation. There are four
 	 * customizable levels of distance which can be assigned different colors
@@ -80,8 +70,8 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 	 */
 	private void setDistColor(TextView text, double dist){
 		int closest = 250,  closestColor = Color.GREEN,
-			closer  = 1000,  closerColor  = Color.parseColor("#ADFF2F"),
-			close   = 2500,  closeColor   = Color.YELLOW,
+			closer  = 1000, closerColor  = Color.parseColor("#ADFF2F"),
+			close   = 2500, closeColor   = Color.YELLOW,
 			far     = 5000, farColor	 = Color.parseColor("#FFA500"),
 			textColor,	    distantColor = Color.RED;
 		

@@ -2,14 +2,14 @@ package com.rpcarrig.memomapa;
 
 import java.util.ArrayList;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.LatLng;
 
 public class MemoHandler extends SQLiteOpenHelper {
 	private static final String CLASS = "MemoHandler";
@@ -26,8 +26,8 @@ public class MemoHandler extends SQLiteOpenHelper {
 		KEY_MLONG  = "memo_longitude",
 		KEY_MRAD   = "memo_radius";
 	private String selectFromMemos = "SELECT  * FROM " + TABLE_MEMOS,
-				   selection,
-				   table;
+				   table,
+				   selection;
 	private static final int DATABASE_VERSION = 2;
 
 	private static MemoHandler memoDbInstance = null;
@@ -41,10 +41,8 @@ public class MemoHandler extends SQLiteOpenHelper {
 	public static MemoHandler getInstance(Context context){
 		Log.d(CLASS, "getInstance");
 		
-		//if(memoDbInstance == null) memoDbInstance = new MemoHandler(context);
-		//return memoDbInstance;
-		
-		return new MemoHandler(context);
+		if(memoDbInstance == null) memoDbInstance = new MemoHandler(context);
+		return memoDbInstance;
 	}
 
 	@Override
@@ -74,8 +72,6 @@ public class MemoHandler extends SQLiteOpenHelper {
 	/**
 	 *  ALL C.R.U.D. OPERATIONS BELOW
 	 */	
-	
-	/*
 	public void addMemo(Memo memo) {
 		Log.d(CLASS, "addMemo");
 		ContentValues values = new ContentValues();
@@ -105,7 +101,7 @@ public class MemoHandler extends SQLiteOpenHelper {
 	public void deleteAllMemos(){
 		Log.d(CLASS, "deleteAllMemos");
 		getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_MEMOS);
-	}*/
+	}
 	
 	public ArrayList<Memo> getAllMemos() {
 		Log.d(CLASS, "getAllMemos");
@@ -126,17 +122,12 @@ public class MemoHandler extends SQLiteOpenHelper {
 		}
 		return memoList;
 	}
-	/**
-	public ArrayList<Memo> getAllMemosSortedBy(int flag) {
-		Log.d(CLASS, "getAllMemosSortedBy " + flag);
-		String o = KEY_MDATE;
-		switch(flag){
-			case 0:  o = KEY_MTITLE;
-			case 1:  o = KEY_MBODY;
-			default: o = KEY_MDATE;
-		}
+
+	public ArrayList<Memo> getAllSortedMemos(String sortBy, boolean asc) {
+		Log.d(CLASS, "getAllMemosSortedBy " + sortBy);
+		if(asc) sortBy = sortBy.concat(" ASC");
 		Cursor cursor = getWritableDatabase().rawQuery(selectFromMemos
-				+ " ORDER BY " + o, null);
+				+ " ORDER BY " + sortBy, null);
 		ArrayList<Memo> memoList = new ArrayList<Memo>();
 		if(cursor.moveToFirst()){
 			do {
@@ -152,6 +143,8 @@ public class MemoHandler extends SQLiteOpenHelper {
 		cursor.close();
 		return memoList;		
 	}
+	
+	@Deprecated
 	public ArrayList<Memo> getDummyMemos(){
 		Log.d(CLASS, "getDummyMemos");
 		ArrayList<Memo> memoArray = new ArrayList<Memo>();
@@ -222,6 +215,6 @@ public class MemoHandler extends SQLiteOpenHelper {
 		String[] whereArgs = { String.valueOf(memo.getId()) };
 		return getWritableDatabase().update(table, values, selection, 
 				whereArgs);
-	}*/
+	}
 }
 

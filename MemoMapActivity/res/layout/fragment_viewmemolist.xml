@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:showDividers="end"
-    tools:context=".ViewMemoListFragment" >
+    tools:context=".MemoListFragment" >
 
     <ListView
         android:id="@android:id/list"

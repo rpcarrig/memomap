@@ -1,6 +1,8 @@
 package com.rpcarrig.memomapa;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,7 +13,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class DbHandler extends SQLiteOpenHelper {
+public class DataHandler extends SQLiteOpenHelper {
 	
 
 	private static final String CLASS = "DatabaseHandler";
@@ -41,16 +43,16 @@ public class DbHandler extends SQLiteOpenHelper {
 				   table;
 	private static final int DATABASE_VERSION = 1;
 
-	private static DbHandler dbInstance = null;
-	private DbHandler(Context context) {
+	private static DataHandler dbInstance = null;
+	private DataHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		Log.d(CLASS, "DbHandler (constructor)");
 	}
 	
-	public static DbHandler getInstance(Context context){
+	public static DataHandler getInstance(Context context){
 		Log.d(CLASS, "getInstance");
 		
-		if(dbInstance == null) dbInstance = new DbHandler(context);
+		if(dbInstance == null) dbInstance = new DataHandler(context);
 		return dbInstance;
 	}
 	/**
@@ -198,6 +200,57 @@ public class DbHandler extends SQLiteOpenHelper {
 		return memoList;
 	}
 	
+	public ArrayList<Memo> getAllClosestMemos(LatLng loc) {
+		Log.d(CLASS, "getAllMemos");
+		
+		ArrayList<Memo> memoList = new ArrayList<Memo>();
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectFromMemos, null);
+
+		if(cursor.moveToFirst()){
+			do {
+				Memo memo = new Memo(
+						Integer.parseInt(cursor.getString(0)),
+						cursor.getString(1), cursor.getString(2),
+						Double.parseDouble(cursor.getString(3)),
+						Double.parseDouble(cursor.getString(4)),
+						Integer.parseInt(cursor.getString(5)));
+				memoList.add(memo);
+			} while (cursor.moveToNext());
+		}
+		db.close();
+		
+		final LatLng newLoc = loc;
+		Collections.sort(memoList, new Comparator<Memo>() {
+		    public int compare(Memo lhs, Memo rhs) {
+		        return (int) (lhs.getDistance(newLoc) - rhs.getDistance(newLoc));
+		    }
+		});
+		
+		return memoList;
+	}
+	
+	public ArrayList<Memo> getAllSortedMemos(String sortBy, boolean asc) {
+		Log.d(CLASS, "getAllMemosSortedBy " + sortBy);
+		if(asc) sortBy = sortBy.concat(" ASC");
+		Cursor cursor = getWritableDatabase().rawQuery(selectFromMemos
+				+ " ORDER BY " + sortBy, null);
+		ArrayList<Memo> memoList = new ArrayList<Memo>();
+		if(cursor.moveToFirst()){
+			do {
+				Memo memo = new Memo(
+						Integer.parseInt(cursor.getString(0)),
+						cursor.getString(1), cursor.getString(2),
+						Double.parseDouble(cursor.getString(3)),
+						Double.parseDouble(cursor.getString(4)),
+						Integer.parseInt(cursor.getString(5)));
+				memoList.add(memo);
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		return memoList;		
+	}
+	
 	public Favorite getFave(int id) {
 		Log.d(CLASS, "getFave");
 		table     = TABLE_FAVES;
@@ -251,7 +304,7 @@ public class DbHandler extends SQLiteOpenHelper {
 		selection = KEY_MID + "=?";
 		String[] args    = new String[]{ String.valueOf(id) }, 
 				 columns = new String[]{ KEY_MID, KEY_MTITLE, KEY_MBODY, 
-							KEY_MDATE, KEY_MLAT, KEY_MLONG, KEY_MRAD };
+							KEY_MLAT, KEY_MLONG, KEY_MRAD };
 			     
 		Cursor cursor = getWritableDatabase()
 				.query(table, columns, selection, args, null, null, null);
@@ -259,7 +312,8 @@ public class DbHandler extends SQLiteOpenHelper {
 		
 		Memo memo = new Memo(
 				Integer.parseInt(cursor.getString(0)),
-				cursor.getString(1), cursor.getString(2),
+				cursor.getString(1),
+				cursor.getString(2),
 				Double.parseDouble(cursor.getString(3)),
 				Double.parseDouble(cursor.getString(4)),
 				Integer.parseInt(cursor.getString(5)));

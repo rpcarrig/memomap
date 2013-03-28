@@ -18,26 +18,22 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MemoMapService extends Service implements LocationListener {
-	private static final String CLASS = "MemoMapService";
+	private static final String TAG = "MemoMapService";
 	
 	boolean canGetLocation	 = false,
-			hasDatabase		 = false,	
 			isGpsEnabled	 = false,
 			isNetworkEnabled = false;
 	static double latitude,
 				  longitude;
 	int	counter	= 0,
 		mId		= 0;
-
-	private Location location = null;
+	AlertDialog dialog;
+	private Location location = null,
+					 lastLocation = null;
 	private LocationManager locationManager = null;
 	private NotificationCompat.Builder noteBuilder = null;
 	private NotificationManager noteManager = null;		
@@ -52,29 +48,26 @@ public class MemoMapService extends Service implements LocationListener {
 	 * 
 	 */
 	public MemoMapService(){
-		Log.d(CLASS, "MemoMapService (constructor)");
+		Log.d(TAG, "MemoMapService (constructor)");
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.d(CLASS, "onBind");
+		Log.d(TAG, "onBind");
 		return binder; }
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.d(CLASS, "onCreate");
+		Log.d(TAG, "onCreate");
 
-		noteManager = (NotificationManager)
-				getSystemService(Context.NOTIFICATION_SERVICE);
-		
 		startGps();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.d(CLASS, "onDestroy");
+		Log.d(TAG, "onDestroy");
 		noteManager.cancel(0);
 		
 		if(locationManager != null){
@@ -84,7 +77,7 @@ public class MemoMapService extends Service implements LocationListener {
 	
 	@Override
 	public void onLocationChanged(Location arg0) {
-		Log.d(CLASS, "onLocationChanged");
+		Log.d(TAG, "onLocationChanged");
 		if (locationManager != null){
 			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if(location != null){
@@ -95,7 +88,7 @@ public class MemoMapService extends Service implements LocationListener {
 		updateNote("Location updated. MemoMap is searching...");
 		
 		float[] results = { -1, -1, -1 };
-		ArrayList<Memo> memoList = DbHandler.getInstance(this).getAllMemos();
+		ArrayList<Memo> memoList = DataHandler.getInstance(this).getAllMemos();
 		for (Memo m : memoList) {
 			Location.distanceBetween(latitude, longitude, m.getLatitude(), 
 					m.getLongitude(), results);
@@ -111,44 +104,46 @@ public class MemoMapService extends Service implements LocationListener {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId){
-		Log.d(CLASS, "onStartCommand");
+		Log.d(TAG, "onStartCommand");
 		return Service.START_STICKY;
 	}
 	
 	@Override
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) { 
-		Log.d(CLASS, "onStatusChanged");
+		Log.d(TAG, "onStatusChanged");
 	}
 	
 	/**
 	 * 
 	 */	
 	public boolean canGetLocation(){
-		Log.d(CLASS, "canGetLocation");
+		Log.d(TAG, "canGetLocation");
 		return this.canGetLocation;
 	}
 	
 	public static double distanceTo(LatLng loc){
-		Log.d(CLASS, "distanceTo");
+		Log.d(TAG, "distanceTo");
 		float[] results = {0};
 		Location.distanceBetween(latitude, longitude, loc.latitude, loc.longitude, results);
 		return results[0];	
 	}
 	
 	public double getLatitude(){
-		Log.d(CLASS, "getLatitude");
+		Log.d(TAG, "getLatitude");
 		if (location != null){ return latitude = location.getLatitude(); }
 		else return -1;
 	}
 	
 	public double getLongitude(){
-		Log.d(CLASS, "getLongitude");
+		Log.d(TAG, "getLongitude");
 		if (location != null){ return longitude = location.getLongitude(); }
 		else return -1;
 	}
 		
 	public Location getFreshLocation(){
-		Log.d(CLASS, "geoLocation");
+		lastLocation = location;
+		
+		Log.d(TAG, "geoLocation");
 		if( !isGpsEnabled && !isNetworkEnabled){
 			//no GPS or network
 			Log.e(CONNECTIVITY_SERVICE, "no GPS or network");
@@ -180,13 +175,15 @@ public class MemoMapService extends Service implements LocationListener {
 				}
 			}
 		}
-		return location;
+		
+		if(isBetterLocation(location, lastLocation)) return location;
+		else return lastLocation;
 	}
 	
-	public Location getLocation(){ return location; }
+	public Location getLocation(){ return location;	}
 	
 	public void startGps(){
-		Log.d(CLASS, "startGps");
+		Log.d(TAG, "startGps");
 		try{
 			locationManager	= (LocationManager)this.getSystemService(LOCATION_SERVICE);
 			isGpsEnabled		= locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -213,7 +210,7 @@ public class MemoMapService extends Service implements LocationListener {
 	}
 	
 	public void showSettingsAlert(){
-		Log.d(CLASS, "showSettingsAlert");
+		Log.d(TAG, "showSettingsAlert");
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 		
 		alertDialog.setMessage("Your GPS is not available. Please verify that GPS is enabled in your device's settings.");
@@ -235,7 +232,7 @@ public class MemoMapService extends Service implements LocationListener {
 	}
 	
 	public void stopGps(){
-		Log.d(CLASS, "stopGps");
+		Log.d(TAG, "stopGps");
 		locationManager.removeUpdates(this);
 	}
 	
@@ -245,7 +242,7 @@ public class MemoMapService extends Service implements LocationListener {
 	}
 	
 	public void updateNote(String memo, String loc){
-		Log.d(CLASS, "updateNote");
+		Log.d(TAG, "updateNote");
 		String s = "@" + loc + ": " + memo;
 		noteBuilder.setContentText(loc);
 		noteBuilder.setContentTitle(memo);
@@ -255,8 +252,70 @@ public class MemoMapService extends Service implements LocationListener {
 	
 	public class GpsBinder extends Binder{
 		MemoMapService getService(){
-			Log.d(CLASS, "getService");
+			Log.d(TAG, "getService");
 			return MemoMapService.this;
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	/** Determines whether one Location reading is better than the current Location fix
+	  * @param location  The new Location that you want to evaluate
+	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+	  */
+	protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+		Log.d(TAG, "isBetterLocation");
+		Log.d(TAG, "Comparing (" + location.getLongitude() + ", " + location.getLatitude() + ")");
+		
+		final int TWO_MINUTES = 1000 * 60 * 2;
+	    if (currentBestLocation == null) {
+	        // A new location is always better than no location
+	        return true;
+	    }
+	    else Log.d(TAG, "With (" + currentBestLocation.getLongitude() + ", " + currentBestLocation.getLatitude() + ")");
+
+	    // Check whether the new location fix is newer or older
+	    long timeDelta = location.getTime() - currentBestLocation.getTime();
+	    boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+	    boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+	    boolean isNewer = timeDelta > 0;
+
+	    // If it's been more than two minutes since the current location, use the new location
+	    // because the user has likely moved
+	    if (isSignificantlyNewer) {
+	        return true;
+	    // If the new location is more than two minutes older, it must be worse
+	    } else if (isSignificantlyOlder) {
+	        return false;
+	    }
+
+	    // Check whether the new location fix is more or less accurate
+	    int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+	    boolean isLessAccurate = accuracyDelta > 0;
+	    boolean isMoreAccurate = accuracyDelta < 0;
+	    boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+	    // Check if the old and new location are from the same provider
+	    boolean isFromSameProvider = isSameProvider(location.getProvider(),
+	            currentBestLocation.getProvider());
+
+	    // Determine location quality using a combination of timeliness and accuracy
+	    if (isMoreAccurate) {
+	        return true;
+	    } else if (isNewer && !isLessAccurate) {
+	        return true;
+	    } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+	        return true;
+	    }
+	    return false;
+	}
+
+	/** Checks whether two providers are the same */
+	private boolean isSameProvider(String provider1, String provider2) {
+	    if (provider1 == null) {
+	      return provider2 == null;
+	    }
+	    return provider1.equals(provider2);
 	}
 }
