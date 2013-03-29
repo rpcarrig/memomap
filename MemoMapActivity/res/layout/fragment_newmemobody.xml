@@ -7,7 +7,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/tv_Body"
+        android:id="@+id/memobodytext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -26,7 +26,7 @@
         android:layout_height="fill_parent"
         android:layout_above="@+id/continue_button"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tv_Body"
+        android:layout_below="@+id/memobodytext"
         android:layout_margin="6dp"
         android:ems="10"
         android:gravity="top"

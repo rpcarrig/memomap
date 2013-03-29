@@ -7,7 +7,7 @@
     tools:context=".CreateMemoActivity" >
 
     <LinearLayout
-        android:id="@+id/mm_ll_buttons"
+        android:id="@+id/viewmemofrag"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"

@@ -11,6 +11,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.ServiceConnection;
@@ -21,12 +22,15 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -49,14 +53,12 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 							  MIN_MS_BETWEEN_UPDATES = 1000 * 60 * 1;
 	
 	private MemoMapService memoMapService;
-	private LatLng latLongLocation;
-	private static ArrayList<Memo> memoList;
-	private static Circle circle;
+	private static LatLng latLongLocation;
 	private static GoogleMap googleMap;
 	private static Location lastLocation,
 							location;
 	private LocationManager locationManager = null;
-	private static Marker marker;
+	private Marker newMemoMarker;
 	private static Memo tempMemo;
 	private static String receiveAddress;
 
@@ -66,14 +68,16 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			isNetworkEnabled = false;
 	Double latitude,
 		   longitude;
-	MemoListFragment memoListFragment = null;
+	Fragments.MemoList memoListFragment = null;
 	Runnable drawMemoMarkers = new Runnable(){
 		public void run(){
 			for(Memo m : DataHandler.getInstance(MemoMap
 					.getInstance()).getAllMemos()){
-				circle = googleMap.addCircle(m.getCircleOptions());
-				marker = googleMap.addMarker(m.getMarkerOptions());
+				Circle circle = googleMap.addCircle(m.getCircleOptions());
+				
+				Marker marker = googleMap.addMarker(m.getMarkerOptions());
 				m.setMarker(marker);
+				//Log.d(TAG, m.getMarker().getTitle());
 			}
 		}
 	};
@@ -131,7 +135,7 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 		}
 		
 		if(memoListFragment == null){
-			memoListFragment = new MemoListFragment();
+			memoListFragment = new Fragments.MemoList();
 			double[] coords = {location.getLatitude(), location.getLongitude()};
 			Bundle bundle = new Bundle();
 			bundle.putDoubleArray("location", coords);
@@ -248,8 +252,8 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 		else Log.d(TAG, "Can't find EditText.");
 		
 		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLongLocation, 11));
-		marker.setTitle(tempMemo.getMemoBody());
-		marker.showInfoWindow();
+		newMemoMarker.setTitle(tempMemo.getMemoBody());
+		newMemoMarker.showInfoWindow();
 		
 		
 		getFragmentManager().beginTransaction()
@@ -257,7 +261,7 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 				R.animator.slide_in_frombottom, R.animator.slide_out_totop,
 				R.animator.slide_in_fromtop, R.animator.slide_out_tobottom)
 			.addToBackStack(null)
-			.replace(R.id.fragment_bottomcontainer, new MemoLocFragment())
+			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoLoc())
 			.commit();
 	}
 	
@@ -265,7 +269,7 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 		Log.d(TAG, "createMemo");
 		tempMemo = new Memo();
 		
-		marker = googleMap.addMarker(new MarkerOptions()
+		Marker marker = googleMap.addMarker(new MarkerOptions()
 				.position(latLongLocation));
 		
     	getFragmentManager().beginTransaction()
@@ -273,7 +277,7 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 				R.animator.slide_in_fromleft, R.animator.slide_out_toright,
 				R.animator.slide_in_fromright, R.animator.slide_out_toleft)
 			.addToBackStack(null)
-			.replace(R.id.fragment_bottomcontainer, new MemoBodyFragment())
+			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoBody())
 			.commit();
 	}
 	
@@ -289,18 +293,10 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 		final LatLng result = new LatLng(found.get(0).getLatitude(),
 				found.get(0).getLongitude());
 		
-		marker = googleMap.addMarker(new MarkerOptions()
+		newMemoMarker = googleMap.addMarker(new MarkerOptions()
 					.position(result).title(address));
-		marker.showInfoWindow();
+		newMemoMarker.showInfoWindow();
 		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(result, 17));
-		
-		OnInfoWindowClickListener listener = new OnInfoWindowClickListener(){
-			@Override
-			public void onInfoWindowClick(Marker marker) {
-				createMemo();
-			}
-		};
-		googleMap.setOnInfoWindowClickListener(listener);
 	}
 	
 	public Location getFreshLocation(){
@@ -343,21 +339,24 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 		else return lastLocation;
 	}
 	
-	public void openMemo(Memo memo){}
-	
 	private void resetView(){
 		Log.d(TAG, "resetView");
-		if(circle != null) circle.remove();
-		if(marker != null) marker.remove();
+		
 		if(location != null){
 			latLongLocation = new LatLng(
 					location.getLatitude(), 
 					location.getLongitude());
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLongLocation, 12));
 		}
-		//if(memoListFragment.getListView().isClickable()){
-			//memoListFragment.getListView().setOnItemClickListener(memoItemClick);
-		//}
+		if(memoListFragment.getListView().isClickable()){
+			memoListFragment.getListView().setOnItemClickListener(new OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					viewMemoOnMap(arg3);
+				}
+			});
+		}
 	}
 	
 	public void saveMemoClick(View view){
@@ -373,20 +372,21 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 		tempMemo.setLongitude(location.getLongitude());
 		
 		DataHandler.getInstance(MemoMap.getInstance()).addMemo(tempMemo);
-
+		newMemoMarker.remove();
+		
 		getFragmentManager().popBackStack(getFragmentManager().getBackStackEntryCount(), 0);
     	getFragmentManager().beginTransaction()
 			.setCustomAnimations(
 					R.animator.slide_in_fromright, R.animator.slide_out_toleft,
 					R.animator.slide_in_fromleft, R.animator.slide_out_toright)
-			.replace(R.id.fragment_bottomcontainer, new MemoListFragment(), "memoList")
+			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoList(), "memoList")
 			.commit();
-    	
+    	/**
     	ArrayList<Memo> memoArray = DataHandler.getInstance(MemoMap.getInstance()).getAllMemos();		
 		MemoAdapter memoAdapter = new MemoAdapter(MemoMap.getInstance(), 0, 
 				memoArray, latLongLocation);
-    	((MemoListFragment)getFragmentManager().findFragmentByTag("memoList"))
-    		.setListAdapter(memoAdapter);
+    	((Fragments.MemoList)getFragmentManager().findFragmentByTag("memoList"))
+    		.setListAdapter(memoAdapter);*/
 	}
 	
 	private void searchByAddress(){
@@ -426,18 +426,40 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			.setCustomAnimations(
 					R.animator.slide_in_fromleft, R.animator.slide_out_toright,
 					R.animator.slide_in_fromright, R.animator.slide_out_toleft)
-			.replace(R.id.fragment_topcontainer, new SettingsFragment())
+			.replace(R.id.fragment_topcontainer, new Fragments.Settings())
 			.addToBackStack(null)
 			.commit();
 	}
 	
-	private static void viewMemoOnMap(long id){
+	private void viewMemoOnMap(long id){
 		Log.d(TAG, "viewMemo (id: " + id + ")");
-		int i = (int)id;
-		Memo m = memoList.get(i);
-		m.getMarker().showInfoWindow();
-		googleMap.animateCamera(CameraUpdateFactory
+		Memo m = DataHandler.getInstance(MemoMap.getInstance())
+				.getAllClosestMemos(latLongLocation).get((int)id);
+		Marker k = googleMap.addMarker(m.getMarkerOptions());
+		k.showInfoWindow();
+		Circle c = googleMap.addCircle(m.getCircleOptions());
+		if(m != null){
+			googleMap.animateCamera(CameraUpdateFactory
 				.newLatLngZoom(m.getLatLong(), 17));
+			/**
+			getFragmentManager().beginTransaction()
+				.setCustomAnimations(
+						R.animator.slide_in_fromright, R.animator.slide_out_toleft,
+						R.animator.slide_in_fromleft, R.animator.slide_out_toright)
+				.replace(R.id.fragment_bottomcontainer, new Fragments.OpenMemo())
+				.addToBackStack(null)
+				.commit();
+			
+			TextView memoBody = (TextView)findViewById(R.id.memobodytext),
+					 memoLoc  = (TextView)findViewById(R.id.viewloctext),
+					 memoLong = (TextView)findViewById(R.id.viewlong),
+					 memoLat  = (TextView)findViewById(R.id.viewlat);
+			memoBody.setText(m.getMemoBody());
+			memoLoc.setText(m.getMemoTitle());
+			memoLong.setText((new Double (m.getLongitude())).toString());
+			memoLat.setText((new Double (m.getLatitude())).toString());		
+			 */
+		}
 	}
 	
 	/**
@@ -445,43 +467,98 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 	 *
 	 *
 	 */	
-	
-	public static class MemoBodyFragment extends Fragment {
-		private final String TAG = "NewMemoBodyFragment";
-		public MemoBodyFragment(){ }
-		
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-				Bundle savedInstanceState) {
-			Log.d(TAG, "onCreateView");
-			return inflater.inflate(R.layout.fragment_newmemobody, container, false);
-		}
-	}
-	
-	public static class MemoLocFragment extends Fragment{
-		final String CLASS = "MemoLocFragment";
-		public MemoLocFragment(){ }
+	private static class Fragments {
+		public static class MemoList extends ListFragment {
+			private final static String TAG = "MemoListFragment";
+			
+			ArrayList<Memo> memoArray;
+			LatLng location;
+			
+			public MemoList(){ }
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-				Bundle savedInstanceState) {
-			Log.d(CLASS, "onCreateView");
-			return inflater.inflate(R.layout.fragment_newmemoloc, container, false);
-		}		
-	}
-	
-	public static class OpenMemoFragment extends Fragment{
-		final String CLASS = "OpenMemoFragment";
-		public OpenMemoFragment(){ }
+			@Override
+			public void onCreate(Bundle savedInstanceState){
+				super.onCreate(savedInstanceState);
+				Bundle bundle = this.getArguments();
+				if(bundle != null) {
+					double d[] = bundle.getDoubleArray("location");
+					Log.d(TAG, d[0] + " + " + d[1]);
+					location = new LatLng(d[0], d[1]);
+				}
+			}
+			
+			@Override
+			public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+					Bundle savedInstanceState) {
+				Log.d(TAG, "onCreateView");
+					
+				View view = inflater.inflate(R.layout.fragment_viewmemolist, container,
+						false);
+				return view;
+			}
+			
+			@Override
+			public void onResume(){
+				Log.d(TAG, "onResume");
+				super.onResume();
+			}
+			
+			@Override
+			public void onStart(){
+				Log.d(TAG, "onStart");
+				memoArray = DataHandler.getInstance(MemoMap.getInstance()).getAllClosestMemos(location);
+				MemoAdapter memoAdapter = new MemoAdapter(MemoMap.getInstance(), 0,
+						memoArray, location);	
+				getListView().setAdapter(memoAdapter);
+				super.onStart();
+			}
+		}
 		
-		@Override 
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			Log.d(CLASS, "onCreateView");
-			return inflater.inflate(R.layout.dialog_viewmemo, container, false);
+		public static class MemoBody extends Fragment {
+			private final String TAG = "NewMemoBodyFragment";
+			public MemoBody(){ }
+			
+			@Override
+			public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+					Bundle savedInstanceState) {
+				Log.d(TAG, "onCreateView");
+				return inflater.inflate(R.layout.fragment_newmemobody, container, false);
+			}
+		}
+		
+		public static class MemoLoc extends Fragment{
+			final String CLASS = "MemoLocFragment";
+			public MemoLoc(){ }
+	
+			@Override
+			public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+					Bundle savedInstanceState) {
+				Log.d(CLASS, "onCreateView");
+				return inflater.inflate(R.layout.fragment_newmemoloc, container, false);
+			}		
+		}
+		
+		public static class OpenMemo extends Fragment{
+			final String CLASS = "OpenMemoFragment";
+			public OpenMemo(){ }
+			
+			@Override 
+			public View onCreateView(LayoutInflater inflater, ViewGroup container,
+					Bundle savedInstanceState) {
+				Log.d(CLASS, "onCreateView");
+				return inflater.inflate(R.layout.dialog_viewmemo, container, false);
+			}
+		}
+		
+		public static class Settings extends PreferenceFragment {
+			public Settings(){ }
+		    @Override
+		    public void onCreate(Bundle savedInstanceState) {
+		        super.onCreate(savedInstanceState);
+		        addPreferencesFromResource(R.xml.preferences);
+		    }
 		}
 	}
-	
 	/** Determines whether one Location reading is better than the current Location fix
 	  * @param location  The new Location that you want to evaluate
 	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one

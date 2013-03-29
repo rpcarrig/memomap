@@ -307,11 +307,10 @@ containing a value of this type.
         public static final int fragment_topcontainer=0x7f060014;
         public static final int hybrid=0x7f060004;
         public static final int main_fragments_layout=0x7f060013;
-        public static final int memoLat=0x7f060025;
         public static final int memoList=0x7f060020;
-        public static final int memoLong=0x7f060024;
         public static final int memoSaveButton=0x7f060031;
         public static final int memoSpinner=0x7f060017;
+        public static final int memobodytext=0x7f060006;
         public static final int menu_addfave=0x7f06003b;
         public static final int menu_creatememo=0x7f060038;
         public static final int menu_resetview=0x7f060039;
@@ -320,7 +319,6 @@ containing a value of this type.
         public static final int ml_Body=0x7f060034;
         public static final int ml_DistanceTo=0x7f060036;
         public static final int ml_Title=0x7f060035;
-        public static final int mm_ll_buttons=0x7f060005;
         public static final int mm_rl_main_view=0x7f060016;
         public static final int newMemoLocation=0x7f06002e;
         public static final int newmemo_body=0x7f06002b;
@@ -332,9 +330,6 @@ containing a value of this type.
         public static final int satellite=0x7f060002;
         public static final int seekBar1=0x7f060032;
         public static final int terrain=0x7f060003;
-        public static final int textView1=0x7f060022;
-        public static final int textView2=0x7f060023;
-        public static final int tv_Body=0x7f060006;
         public static final int tv_LatValue=0x7f06000d;
         public static final int tv_Latitude=0x7f06000c;
         public static final int tv_LongValue=0x7f06000b;
@@ -347,6 +342,11 @@ containing a value of this type.
         public static final int tv_om_TitleContents=0x7f060019;
         public static final int tv_radius=0x7f06001c;
         public static final int tv_radiusvalue=0x7f06001d;
+        public static final int viewlat=0x7f060025;
+        public static final int viewloctext=0x7f060023;
+        public static final int viewlong=0x7f060024;
+        public static final int viewmemobody=0x7f060022;
+        public static final int viewmemofrag=0x7f060005;
     }
     public static final class layout {
         public static final int activity_creatememo=0x7f030000;

@@ -184,11 +184,10 @@ int id fragment_bottomcontainer 0x7f060015
 int id fragment_topcontainer 0x7f060014
 int id hybrid 0x7f060004
 int id main_fragments_layout 0x7f060013
-int id memoLat 0x7f060025
 int id memoList 0x7f060020
-int id memoLong 0x7f060024
 int id memoSaveButton 0x7f060031
 int id memoSpinner 0x7f060017
+int id memobodytext 0x7f060006
 int id menu_addfave 0x7f06003b
 int id menu_creatememo 0x7f060038
 int id menu_resetview 0x7f060039
@@ -197,7 +196,6 @@ int id menu_settings 0x7f06003a
 int id ml_Body 0x7f060034
 int id ml_DistanceTo 0x7f060036
 int id ml_Title 0x7f060035
-int id mm_ll_buttons 0x7f060005
 int id mm_rl_main_view 0x7f060016
 int id newMemoLocation 0x7f06002e
 int id newmemo_body 0x7f06002b
@@ -209,9 +207,6 @@ int id rb_RadiusC 0x7f060011
 int id satellite 0x7f060002
 int id seekBar1 0x7f060032
 int id terrain 0x7f060003
-int id textView1 0x7f060022
-int id textView2 0x7f060023
-int id tv_Body 0x7f060006
 int id tv_LatValue 0x7f06000d
 int id tv_Latitude 0x7f06000c
 int id tv_LongValue 0x7f06000b
@@ -224,6 +219,11 @@ int id tv_om_Title 0x7f060018
 int id tv_om_TitleContents 0x7f060019
 int id tv_radius 0x7f06001c
 int id tv_radiusvalue 0x7f06001d
+int id viewlat 0x7f060025
+int id viewloctext 0x7f060023
+int id viewlong 0x7f060024
+int id viewmemobody 0x7f060022
+int id viewmemofrag 0x7f060005
 int layout activity_creatememo 0x7f030000
 int layout activity_memomap 0x7f030001
 int layout activity_openmemo 0x7f030002

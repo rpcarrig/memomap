@@ -1,7 +1,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mm_ll_buttons"
+    android:id="@+id/viewmemofrag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
@@ -14,7 +14,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/tv_Body"
+            android:id="@+id/memobodytext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
@@ -26,7 +26,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/viewmemobody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="5"
@@ -51,7 +51,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/viewloctext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
@@ -88,7 +88,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/memoLong"
+                android:id="@+id/viewlong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
@@ -118,7 +118,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/memoLat"
+                android:id="@+id/viewlat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
