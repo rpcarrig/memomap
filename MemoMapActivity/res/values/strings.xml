@@ -20,7 +20,8 @@
     <string name="default_">Default</string>
     <string name="default_rad">Default Radius</string>
     <string name="delete_memo">Delete Memo</string>
-    <string name="edit">Edit Memo</string>
+   	<string name="edit">Edit</string>
+    <string name="editmemo">Edit Memo</string>
     <string name="explain">The memo\'s radius determines that maximum distance you can be from a memo in order to be reminded. The smaller the radius, the closer you must approach the set location before the notification appears.</string>
     <string name="favorites">Favorites</string>
     <string name="hello_world">Hello world!</string>
@@ -42,7 +43,7 @@
     <string name="radius_info">What does this mean?</string>
     <string name="remember_loc">Check here to save this location to your favorites list.</string>
     <string name="reset_view">Reset View</string>
-    <string name="save">Save Memo</string>
+    <string name="save_memo">Save Memo</string>
     <string name="save_and_return">Save and Return</string>
     <string name="saved_memos">Saved Memos</string>
     <string name="search">Search</string>

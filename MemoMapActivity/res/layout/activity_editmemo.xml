@@ -1,40 +1,16 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/viewmemofrag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
     android:orientation="vertical"
-	tools:context=".CreateMemoActivity" >
+    tools:context=".CreateMemoActivity" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/tv_Title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingTop="4dp"
-            android:text="@string/location_name"
-            android:textAllCaps="true"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-
-       	<EditText
-       	    android:id="@+id/et_Title"
-       	    android:layout_width="match_parent"
-       	    android:layout_height="0dp"
-       	    android:layout_margin="6dp"
-       	    android:layout_weight="1"
-       	    android:ems="10"
-       	    android:imeOptions="actionDone"
-       	    android:inputType="text|textEmailSubject"
-       	    android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/memobodytext"
@@ -49,7 +25,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/et_Body"
+            android:id="@+id/edit_body"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_margin="6dp"
@@ -59,8 +35,33 @@
             android:inputType="textMultiLine"
             android:lines="5"
             android:maxLength="1000"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white" >
 
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:id="@+id/tv_Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:text="@string/location_name"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edit_locname"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="6dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="text|textEmailSubject"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -88,7 +89,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_LongValue"
+                android:id="@+id/edit_long"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
@@ -110,7 +111,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_LatValue"
+                android:id="@+id/edit_lat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
@@ -120,7 +121,8 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <RadioGroup
+        <LinearLayout
+            android:id="@+id/LinearLayout1"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -137,24 +139,14 @@
                 android:textColor="@android:color/white"
                 android:textSize="16sp" />
 
-            <RadioButton
-                android:id="@+id/rb_RadiusA"
+            <EditText
+                android:id="@+id/edit_rad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white" />
+                android:layout_margin="6dp"
+                android:inputType="number" />
 
-            <RadioButton
-                android:id="@+id/rb_RadiusB"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:textColor="@android:color/white" />
-
-            <RadioButton
-                android:id="@+id/rb_RadiusC"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/white" />
-        </RadioGroup>
+        </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>

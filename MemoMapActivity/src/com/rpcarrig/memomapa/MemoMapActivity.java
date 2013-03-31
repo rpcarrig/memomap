@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.BaseAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -93,9 +92,10 @@ public class MemoMapActivity extends Activity implements LocationListener {
 		setContentView(R.layout.activity_memomap);		
 		
 		context = this;
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MemoMap.getInstance());
+		
 		startGps();
 		
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MemoMap.getInstance());
 		int mapType = Integer.parseInt(sharedPreferences.getString("prefMapType", "2"));
 		mapFragment = MapFragment.newInstance(new GoogleMapOptions()
 			.camera(new CameraPosition(latLongLocation, 12, 0, 0))
@@ -106,10 +106,13 @@ public class MemoMapActivity extends Activity implements LocationListener {
 				.commit();
 			
 		memoListFragment = new Fragments.MemoList();
-		double[] coords = {location.getLatitude(), location.getLongitude()};
-		Bundle bundle = new Bundle();
-		bundle.putDoubleArray("location", coords);
-		memoListFragment.setArguments(bundle);
+		//if(location == null){
+			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			double[] coords = {location.getLatitude(), location.getLongitude()};
+			Bundle bundle = new Bundle();
+			bundle.putDoubleArray("location", coords);
+			memoListFragment.setArguments(bundle);
+		//}
 		
 		getFragmentManager().beginTransaction()
 			.replace(R.id.fragment_bottomcontainer, memoListFragment, "memoList")
@@ -199,11 +202,14 @@ public class MemoMapActivity extends Activity implements LocationListener {
 	 */
 	
 	private void createMemo(){
+		double latitude  = location.getLatitude(),
+			   longitude = location.getLongitude();
+		
 		Intent createMemo = new Intent(MemoMapActivity.this, CreateMemoActivity.class);
 		Bundle bundle = new Bundle();
-		location = getFreshLocation();
-		bundle.putDouble("lat", location.getLatitude());
-		bundle.putDouble("lon", location.getLongitude());
+		
+		bundle.putDouble("lat", latitude);
+		bundle.putDouble("lon", longitude);
 		createMemo.putExtras(bundle);
 		
 		startActivity(createMemo);
@@ -363,7 +369,7 @@ public class MemoMapActivity extends Activity implements LocationListener {
 				super.onStart();
 			}
 			
-			private void showModifyDialog(long id){
+			private void showModifyDialog(final long id){
 				final Memo m = memoArray.get((int) id);
 
 				AlertDialog.Builder modifyDialogBuilder = new AlertDialog.Builder(context)
@@ -379,13 +385,18 @@ public class MemoMapActivity extends Activity implements LocationListener {
 							public void onClick(DialogInterface dialog, int which) {
 								DataHandler.getInstance(MemoMap.getInstance())
 									.deleteMemo(m);
-								((BaseAdapter) getListView().getAdapter()).notifyDataSetChanged();	
+								getActivity().recreate();	
 							}
 						})
 						.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								Log.d(TAG, "Edit Memo");
+								Intent editIntent = new Intent(MemoMapActivity.context, EditMemoActivity.class);
+								editIntent.putExtra("id", id);
+								editIntent.putExtra("lat", location.latitude);
+								editIntent.putExtra("lon", location.longitude);	
+								startActivity(editIntent);
 							}
 						})
 					.setTitle(m.getLocationName());

@@ -24,7 +24,7 @@
         android:id="@+id/newmemo_body"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/continue_button"
+        android:layout_above="@+id/buttonbarB"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/memobodytext"
         android:layout_margin="6dp"
@@ -37,15 +37,32 @@
         android:minLines="2"
         android:textColor="@android:color/white" />
 
-    <Button
-        android:id="@+id/continue_button"
-        style="?android:attr/buttonBarButtonStyle"
+    <LinearLayout
+        android:id="@+id/buttonbarB"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="continueMemo"
-        android:text="@string/continue_"
-        android:textAllCaps="true" />
-
+        android:layout_alignParentRight="false"
+        android:gravity="bottom" >
+        
+        <Button
+            android:id="@+id/cancel_newmemo"
+           	style="?android:attr/buttonBarButtonStyle"
+           	android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+		    android:onClick="cancelMemo"
+		    android:text="@string/cancel"
+		    android:textAllCaps="true" />
+	    <Button
+	        android:id="@+id/continue_button"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+		    android:onClick="continueMemo"
+	        android:text="@string/continue_"
+	        android:textAllCaps="true" />
+	</LinearLayout>
 </RelativeLayout>
