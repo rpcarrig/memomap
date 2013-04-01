@@ -31,35 +31,14 @@
         <requestFocus />
     </EditText>
 
-    <TextView
-        android:id="@+id/tv_Radius"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/newMemoLocation"
-        android:paddingTop="4dp"
-        android:text="@string/radius"
-        android:textAllCaps="true"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/white"
-        android:textSize="16sp" />
-
-    <CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonbarM"
-        android:text="@string/remember_loc"
-        android:textSize="12sp"
-        android:textStyle="italic" />
-
     <LinearLayout
         android:id="@+id/buttonbarM"
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="false" >
+        android:layout_alignParentRight="false"
+        android:gravity="bottom" >
 
         <Button
             android:id="@+id/button1"
@@ -84,31 +63,54 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/viewmemobody"
-        android:layout_width="wrap_content"
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tv_Radius"
-        android:text="@string/m"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:layout_below="@+id/newMemoLocation"
+        android:text="@string/remember_loc"
+        android:textSize="12sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/tv_Radius"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/checkbox"
+        android:paddingTop="4dp"
+        android:text="@string/radius"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
 
     <SeekBar
         android:id="@+id/seekBar1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/viewmemobody"
+        android:layout_below="@+id/TextView02"
         android:max="975"
         android:minHeight="12dp"
         android:progress="0" />
 
     <TextView
+        android:id="@+id/viewmemobody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekBar1"
+        android:text="@string/m"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
         android:id="@+id/viewloctext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBar1"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/seekBar1"
         android:text="@string/k"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -117,7 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/viewmemobody"
+        android:layout_below="@+id/tv_Radius"
         android:gravity="center"
         android:paddingBottom="4dp"
         android:text="@string/mm"

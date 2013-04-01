@@ -104,7 +104,7 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 				body       = (TextView) view.findViewById(R.id.ml_Body),
 				distanceTo = (TextView) view.findViewById(R.id.ml_DistanceTo);
 			if(title != null && body != null){
-				title.setText     ( memo.getMemoTitle());
+				title.setText     ( memo.getLocationName());
 				body.setText      ( memo.getMemoBody() );
 				setDistColor(distanceTo, d);
 				if (d >= 500) distanceTo.setText(formatKm(d));

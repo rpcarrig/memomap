@@ -3,18 +3,13 @@
     <PreferenceCategory
         android:title="Map Settings"
         android:key="pref_key_map_settings">
-        <PreferenceScreen
-            android:key="pref_screen_mapstyle"
-            android:title="Map Style">
-	        <Preference
-	            android:key="pref_key_normalmap"
-	            android:title="Normal" />
-	        <Preference
-	            android:key="pref_key_satmap"
-	            android:title="Satellite" />
-	        <Preference
-	            android:key="pref_key_hybrid"
-	            android:title="Hybrid" />
-        </PreferenceScreen>
+        <ListPreference
+            android:key="prefMapType"
+            android:title="Map Type"
+            android:entries="@array/mapType"
+            android:entryValues="@array/mapTypeValues" />
 	</PreferenceCategory>
+	<PreferenceCategory
+	    android:title="Database Settings"
+	    android:key="pref_database_settings" />
 </PreferenceScreen>

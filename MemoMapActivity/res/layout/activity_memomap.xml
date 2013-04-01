@@ -4,7 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:scrollbarStyle="insideOverlay"
     tools:context=".MainActivityFragments" >
 
     <FrameLayout
@@ -18,10 +17,7 @@
 	    android:id="@+id/fragment_bottomcontainer"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:layout_weight="1"
-	    android:orientation="vertical"
-	    android:scrollbars="vertical" >
-
+	    android:layout_weight="1">
 	</FrameLayout>
 
 </LinearLayout>

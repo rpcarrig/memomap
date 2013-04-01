@@ -117,7 +117,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put(KEY_MLAT, 	memo.getLatitude());
 		values.put(KEY_MLONG, 	memo.getLongitude());
-		values.put(KEY_MTITLE, 	memo.getMemoTitle());
+		values.put(KEY_MTITLE, 	memo.getLocationName());
 		values.put(KEY_MBODY, 	memo.getMemoBody());
 		values.put(KEY_MDATE, 	memo.getMemoDate());
 		values.put(KEY_MRAD, 	memo.getRadius());
@@ -356,7 +356,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put(KEY_MLAT, 	memo.getLatitude());
 		values.put(KEY_MLONG, 	memo.getLongitude());
-		values.put(KEY_MTITLE, 	memo.getMemoTitle());
+		values.put(KEY_MTITLE, 	memo.getLocationName());
 		values.put(KEY_MBODY, 	memo.getMemoBody());
 		values.put(KEY_MRAD, 	memo.getRadius());
 		values.put(KEY_MDATE, 	memo.getMemoDate());

@@ -3,7 +3,7 @@
 
     <string name="m">25 m</string>
     <string name="mm">100 m</string>
-    <string name="k">5 km</string>
+    <string name="k">1 km</string>
     <string name="add_fave">Add Favorite</string>
     <string name="app_name">MemoMap</string>
     <string name="app_version">Alpha v0.39 (23 Mar 2013)</string>

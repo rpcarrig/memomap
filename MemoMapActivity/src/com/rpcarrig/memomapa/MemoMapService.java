@@ -93,7 +93,7 @@ public class MemoMapService extends Service implements LocationListener {
 			Location.distanceBetween(latitude, longitude, m.getLatitude(), 
 					m.getLongitude(), results);
 			if (results[0] <= m.getRadius())
-				updateNote(m.getMemoBody(), m.getMemoTitle());
+				updateNote(m.getMemoBody(), m.getLocationName());
 		}
 	}
 	

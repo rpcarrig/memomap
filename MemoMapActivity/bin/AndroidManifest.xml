@@ -39,12 +39,13 @@
 
         <activity 
             android:name="com.rpcarrig.memomapa.CreateMemoActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/create_memo" >
         </activity>
         
 		<activity 
-            android:name="com.rpcarrig.memomapa.ViewFavoritesActivity"
-            android:label="@string/view_faves" >
+            android:name="com.rpcarrig.memomapa.SettingsActivity"
+            android:label="@string/settings" >
         </activity>
 
         <service

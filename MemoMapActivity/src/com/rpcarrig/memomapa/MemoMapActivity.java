@@ -4,25 +4,21 @@
 
 package com.rpcarrig.memomapa;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ListFragment;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.ServiceConnection;
-import android.location.Address;
-import android.location.Geocoder;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,133 +27,127 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.BaseAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.rpcarrig.memomapa.MemoMapService.GpsBinder;
 
-public class MemoMapActivity extends Activity implements LocationListener, OnSeekBarChangeListener {
+public class MemoMapActivity extends Activity implements LocationListener {
 	private static final String TAG = "MemoMapActivity";
 	private static final long MIN_DISTANCE_CHANGE	 = 10,
-							  MIN_MS_BETWEEN_UPDATES = 1000 * 60 * 1;
-	
-	private MemoMapService memoMapService;
+							  MIN_MS_BETWEEN_UPDATES = 1000 * 10 * 1;
+
+	private static Context context;
 	private static LatLng latLongLocation;
 	private static GoogleMap googleMap;
-	private static Location lastLocation,
-							location;
+	private static Location location;
+	private MapFragment mapFragment;
+	private Fragments.MemoList memoListFragment;
 	private LocationManager locationManager = null;
-	private Marker newMemoMarker;
-	private static Memo tempMemo;
-	private static String receiveAddress;
+	private MemoMapService memoMapService;
+	private SharedPreferences sharedPreferences;
 
 	boolean gpsBound         = false,
 			canGetLocation	 = false,
 			isGpsEnabled	 = false,
 			isNetworkEnabled = false;
-	Double latitude,
-		   longitude;
-	Fragments.MemoList memoListFragment = null;
+
 	Runnable drawMemoMarkers = new Runnable(){
 		public void run(){
+			googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
 			for(Memo m : DataHandler.getInstance(MemoMap
 					.getInstance()).getAllMemos()){
-				Circle circle = googleMap.addCircle(m.getCircleOptions());
+				Circle circ = googleMap.addCircle(new CircleOptions()
+					.center(m.getLatLong())
+					.fillColor(0x25AA0000)
+					.strokeColor(0xFFAA0000)
+					.strokeWidth(2)
+					.radius(m.getRadius()));
+				m.setCircle(circ);
 				
-				Marker marker = googleMap.addMarker(m.getMarkerOptions());
-				m.setMarker(marker);
-				//Log.d(TAG, m.getMarker().getTitle());
+				MarkerOptions markOpt = new MarkerOptions()
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+					.position(m.getLatLong())
+					.snippet(m.getLocationName())
+					.title(m.getMemoBody());
+				m.setMarker(googleMap.addMarker(markOpt));
+				Log.d(TAG, m.getMarker().toString());
 			}
 		}
 	};
 	
-	ServiceConnection serviceConnection = new ServiceConnection(){
-		@Override
-		public void onServiceConnected(ComponentName name,
-				IBinder service){
-			Log.d(TAG, "ServiceConnection: " + name);
-			GpsBinder binder = (GpsBinder)service;
-			memoMapService = binder.getService();
-			gpsBound = true;
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			Log.d(TAG, "ServiceConnection: onServiceDisconnected");
-			gpsBound = false;
-		}
-	};
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_memomap);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		setContentView(R.layout.activity_memomap);		
 		
-		//Intent gpsIntent = new Intent(this, MemoMapService.class);
-		//bindService(gpsIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-		
-		if(findViewById(R.id.fragment_topcontainer) != null){
-			MapFragment mapFragment = new MapFragment();
-			getFragmentManager().beginTransaction()
-				.add(R.id.fragment_topcontainer, mapFragment, "map")
-				.commit();
-		}
-		
+		context = this;
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MemoMap.getInstance());
 		startGps();
-				
-	}
-
-	private void startGps() {
-		try{
-			locationManager	= (LocationManager)this.getSystemService(LOCATION_SERVICE);
-			isGpsEnabled		= locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			isNetworkEnabled	= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
-
-			location = getFreshLocation();
-			latLongLocation = new LatLng(location.getLatitude(), location.getLongitude());
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			Log.e(NOTIFICATION_SERVICE, "GPS Start error");
-		}
+		int mapType = Integer.parseInt(sharedPreferences.getString("prefMapType", "2"));
+		mapFragment = MapFragment.newInstance(new GoogleMapOptions()
+			.camera(new CameraPosition(latLongLocation, 12, 0, 0))
+			.mapType(mapType));
 		
-		if(memoListFragment == null){
-			memoListFragment = new Fragments.MemoList();
-			double[] coords = {location.getLatitude(), location.getLongitude()};
-			Bundle bundle = new Bundle();
-			bundle.putDoubleArray("location", coords);
-			memoListFragment.setArguments(bundle);
+		getFragmentManager().beginTransaction()
+				.replace(R.id.fragment_topcontainer, mapFragment, "map")
+				.commit();
 			
-			
-			
-			if(findViewById(R.id.fragment_bottomcontainer) != null){
-				getFragmentManager().beginTransaction()
-					.add(R.id.fragment_bottomcontainer, memoListFragment, "memoList")
-					.commit();
-			}
-		}
+		memoListFragment = new Fragments.MemoList();
+		double[] coords = {location.getLatitude(), location.getLongitude()};
+		Bundle bundle = new Bundle();
+		bundle.putDoubleArray("location", coords);
+		memoListFragment.setArguments(bundle);
+		
+		getFragmentManager().beginTransaction()
+			.replace(R.id.fragment_bottomcontainer, memoListFragment, "memoList")
+			.commit();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		Log.d(TAG, "onCreateOptionsMenu");
-		getMenuInflater().inflate(R.menu.activity_memomap, menu);
-		return true;
+	public void onStart(){ 
+		Log.d(TAG, "onStart");
+		super.onStart();
+		
+		int mapType = Integer.parseInt(sharedPreferences.getString("prefMapType", "2"));
+
+		googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
+		googleMap.setMapType(mapType);
+		googleMap.setMyLocationEnabled(true);
+		
+		new Thread(drawMemoMarkers).run();
 	}
 	
+	@Override
+	public void onResume(){	
+		Log.d(TAG, "onResume"); 
+		super.onResume();
+	}
+
+	@Override
+	public void onPause(){
+		Log.d(TAG, "onPause");
+		super.onPause();
+	}
+
+	@Override
+	public void onStop(){
+		Log.d(TAG, "onStop");
+		super.onDestroy();
+	}
+
 	@Override
 	public void onDestroy(){
 		Log.d(TAG, "onDestroy");
@@ -166,14 +156,17 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 	}
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Log.d(TAG, "onCreateOptionsMenu");
+		getMenuInflater().inflate(R.menu.activity_memomap, menu);
+		return true;
+	}
+	
+	@Override
 	public void onLocationChanged(Location location) {
 		Log.d(TAG, "onLocationChanged");
 		if (locationManager != null){
-			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if(location != null){
-				latitude = location.getLatitude();
-				longitude = location.getLongitude();
-			}
+			location = getFreshLocation();
 		}
 	}
 	
@@ -181,128 +174,44 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 	public boolean onOptionsItemSelected( MenuItem item ){
 		Log.d(TAG, "onOptionsItemSelected");
 	    switch(item.getItemId()){
-	    	case R.id.menu_resetview:
-	    		Log.d(TAG, "reset");
-	    		resetView();
-	    		return true;
-		    case R.id.menu_creatememo:
-		    	Log.d(TAG, "create");
-		    	createMemo();
-		    	return true;
-		    case R.id.menu_settings:
-		    	Log.d(TAG, "settings");
-		    	showSettings();
-		    	return true;
-	    	default:
-	    		return super.onOptionsItemSelected(item);
+	    	case R.id.menu_resetview:  resetView();
+	    							   return true;
+		    case R.id.menu_creatememo: createMemo();
+		    						   return true;
+		    case R.id.menu_settings:   showSettings();
+		    						   return true;
+	    	default: return super.onOptionsItemSelected(item);
 	    }
 	}
 	
-	@Override
-	public void onPause(){
-		Log.d(TAG, "onPause");
-		super.onPause();
-	}
-	
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress,
-			boolean fromUser) {
-		Log.d(TAG, "onProgressChanged");		
-	}
 
 	@Override
 	public void onProviderDisabled(String provider) { }
 
 	@Override
 	public void onProviderEnabled(String provider) { }
-	
-	@Override
-	public void onResume(){	
-		Log.d(TAG, "onResume"); 
-		super.onResume();
-	}
-	
-	@Override
-	public void onStart(){ 
-		Log.d(TAG, "onStart");
-		super.onStart();
 		
-		googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
-		googleMap.setMyLocationEnabled(true);
-		
-		resetView();
-		new Thread(drawMemoMarkers).run();
-	}
-	
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) { }
-	
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) { }
 	
 	/**
 	 * 
 	 */
-	public void continueMemo(View view){
-		EditText editText = (EditText)findViewById(R.id.newmemo_body);
-		if(editText != null) tempMemo.setMemoBody(editText.getText().toString());
-		else Log.d(TAG, "Can't find EditText.");
-		
-		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLongLocation, 11));
-		newMemoMarker.setTitle(tempMemo.getMemoBody());
-		newMemoMarker.showInfoWindow();
-		
-		
-		getFragmentManager().beginTransaction()
-			.setCustomAnimations(
-				R.animator.slide_in_frombottom, R.animator.slide_out_totop,
-				R.animator.slide_in_fromtop, R.animator.slide_out_tobottom)
-			.addToBackStack(null)
-			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoLoc())
-			.commit();
-	}
 	
 	private void createMemo(){
-		Log.d(TAG, "createMemo");
-		tempMemo = new Memo();
+		Intent createMemo = new Intent(MemoMapActivity.this, CreateMemoActivity.class);
+		Bundle bundle = new Bundle();
+		location = getFreshLocation();
+		bundle.putDouble("lat", location.getLatitude());
+		bundle.putDouble("lon", location.getLongitude());
+		createMemo.putExtras(bundle);
 		
-		Marker marker = googleMap.addMarker(new MarkerOptions()
-				.position(latLongLocation));
-		
-    	getFragmentManager().beginTransaction()
-    		.setCustomAnimations(
-				R.animator.slide_in_fromleft, R.animator.slide_out_toright,
-				R.animator.slide_in_fromright, R.animator.slide_out_toleft)
-			.addToBackStack(null)
-			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoBody())
-			.commit();
-	}
-	
-	public void defaultClick(View view){
-		SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar1);
-		seekBar.setOnSeekBarChangeListener(this);
-		seekBar.setProgress(75);
-	}
-	
-	private void geocode(String address) throws IOException{
-		List<Address> found = new Geocoder(this)
-				.getFromLocationName(address, 1);
-		final LatLng result = new LatLng(found.get(0).getLatitude(),
-				found.get(0).getLongitude());
-		
-		newMemoMarker = googleMap.addMarker(new MarkerOptions()
-					.position(result).title(address));
-		newMemoMarker.showInfoWindow();
-		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(result, 17));
+		startActivity(createMemo);
 	}
 	
 	public Location getFreshLocation(){
-		lastLocation = location;
-		
 		Log.d(TAG, "geoLocation");
+		double latitude, longitude;
 		if( !isGpsEnabled && !isNetworkEnabled){
 			//no GPS or network
 			Log.e(CONNECTIVITY_SERVICE, "no GPS or network");
@@ -318,6 +227,7 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 					if(location != null){
 						latitude = location.getLatitude();
 						longitude = location.getLongitude();
+						latLongLocation = new LatLng(latitude, longitude);
 					}
 				}
 			}
@@ -330,13 +240,12 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 					if(location != null){
 						latitude = location.getLatitude();
 						longitude = location.getLongitude();
+						latLongLocation = new LatLng(latitude, longitude);
 					}
 				}
 			}
 		}
-		
-		if(isBetterLocation(location, lastLocation)) return location;
-		else return lastLocation;
+		return location;
 	}
 	
 	private void resetView(){
@@ -348,117 +257,38 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 					location.getLongitude());
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLongLocation, 12));
 		}
-		if(memoListFragment.getListView().isClickable()){
-			memoListFragment.getListView().setOnItemClickListener(new OnItemClickListener(){
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					viewMemoOnMap(arg3);
-				}
-			});
-		}
-	}
-	
-	public void saveMemoClick(View view){
-		CheckBox fave = (CheckBox)findViewById(R.id.checkbox);
-		SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar1);
-		TextView text = (TextView)findViewById(R.id.newMemoLocation);
-		if(text != null) tempMemo.setMemoTitle(text.getText().toString());
-		else Log.d(TAG, "Can't find memo location.");
-		if(fave != null) { boolean b = fave.isChecked(); }
-		else Log.d(TAG, "Can't find fave box.");
-		if(seekBar != null) { tempMemo.setRadius(seekBar.getProgress()); }
-		tempMemo.setLatitude(location.getLatitude());
-		tempMemo.setLongitude(location.getLongitude());
-		
-		DataHandler.getInstance(MemoMap.getInstance()).addMemo(tempMemo);
-		newMemoMarker.remove();
-		
-		getFragmentManager().popBackStack(getFragmentManager().getBackStackEntryCount(), 0);
-    	getFragmentManager().beginTransaction()
-			.setCustomAnimations(
-					R.animator.slide_in_fromright, R.animator.slide_out_toleft,
-					R.animator.slide_in_fromleft, R.animator.slide_out_toright)
-			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoList(), "memoList")
-			.commit();
-    	/**
-    	ArrayList<Memo> memoArray = DataHandler.getInstance(MemoMap.getInstance()).getAllMemos();		
-		MemoAdapter memoAdapter = new MemoAdapter(MemoMap.getInstance(), 0, 
-				memoArray, latLongLocation);
-    	((Fragments.MemoList)getFragmentManager().findFragmentByTag("memoList"))
-    		.setListAdapter(memoAdapter);*/
-	}
-	
-	private void searchByAddress(){
-		View view = getLayoutInflater().inflate(R.layout.dialog_searchaddr,
-				null);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setView(view);
-		final EditText userInput = (EditText) 
-				view.findViewById(R.id.address_entry);
-		builder
-			.setPositiveButton(R.string.search, new DialogInterface
-					.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, 
-								int which) {
-							Log.d(TAG, "onClick");
-							receiveAddress = userInput.getText().toString();
-							try {
-								geocode(receiveAddress);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					})
-			.setNegativeButton(R.string.cancel, new DialogInterface
-					.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, 
-								int which) {
-						}
-					});
-		builder.create().show();
 	}
 	
 	private void showSettings(){
-    	getFragmentManager().beginTransaction()
-			.setCustomAnimations(
-					R.animator.slide_in_fromleft, R.animator.slide_out_toright,
-					R.animator.slide_in_fromright, R.animator.slide_out_toleft)
-			.replace(R.id.fragment_topcontainer, new Fragments.Settings())
-			.addToBackStack(null)
-			.commit();
+    	Intent settingsIntent = new Intent(this, SettingsActivity.class);
+    	startActivity(settingsIntent);
 	}
 	
-	private void viewMemoOnMap(long id){
+	private void startGps() {
+		try{
+			locationManager	= (LocationManager)this.getSystemService(LOCATION_SERVICE);
+			isGpsEnabled		= locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			isNetworkEnabled	= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
+
+			location = getFreshLocation();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			Log.e(NOTIFICATION_SERVICE, "GPS Start error");
+		}
+	}
+
+	private static void viewMemoOnMap(long id){
 		Log.d(TAG, "viewMemo (id: " + id + ")");
 		Memo m = DataHandler.getInstance(MemoMap.getInstance())
 				.getAllClosestMemos(latLongLocation).get((int)id);
-		Marker k = googleMap.addMarker(m.getMarkerOptions());
-		k.showInfoWindow();
-		Circle c = googleMap.addCircle(m.getCircleOptions());
+		
 		if(m != null){
+			if (m.getMarker() != null) m.getMarker().showInfoWindow();
 			googleMap.animateCamera(CameraUpdateFactory
 				.newLatLngZoom(m.getLatLong(), 17));
-			/**
-			getFragmentManager().beginTransaction()
-				.setCustomAnimations(
-						R.animator.slide_in_fromright, R.animator.slide_out_toleft,
-						R.animator.slide_in_fromleft, R.animator.slide_out_toright)
-				.replace(R.id.fragment_bottomcontainer, new Fragments.OpenMemo())
-				.addToBackStack(null)
-				.commit();
-			
-			TextView memoBody = (TextView)findViewById(R.id.memobodytext),
-					 memoLoc  = (TextView)findViewById(R.id.viewloctext),
-					 memoLong = (TextView)findViewById(R.id.viewlong),
-					 memoLat  = (TextView)findViewById(R.id.viewlat);
-			memoBody.setText(m.getMemoBody());
-			memoLoc.setText(m.getMemoTitle());
-			memoLong.setText((new Double (m.getLongitude())).toString());
-			memoLat.setText((new Double (m.getLatitude())).toString());		
-			 */
 		}
 	}
 	
@@ -473,6 +303,22 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			
 			ArrayList<Memo> memoArray;
 			LatLng location;
+			MemoAdapter memoAdapter;
+			OnItemClickListener itemClick = new OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+						long arg3) {
+					viewMemoOnMap(arg3);
+				}
+			};
+			OnItemLongClickListener itemLongClick = new OnItemLongClickListener(){
+				@Override
+				public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					showModifyDialog(arg3);
+					return false;
+				}	
+			};
 			
 			public MemoList(){ }
 
@@ -491,15 +337,19 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 					Bundle savedInstanceState) {
 				Log.d(TAG, "onCreateView");
-					
-				View view = inflater.inflate(R.layout.fragment_viewmemolist, container,
+				
+				return inflater.inflate(R.layout.fragment_viewmemolist, container,
 						false);
-				return view;
 			}
 			
 			@Override
 			public void onResume(){
 				Log.d(TAG, "onResume");
+				
+				if(getListView().isClickable()){
+					getListView().setOnItemClickListener(itemClick);
+					getListView().setOnItemLongClickListener(itemLongClick);
+				}
 				super.onResume();
 			}
 			
@@ -507,35 +357,41 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 			public void onStart(){
 				Log.d(TAG, "onStart");
 				memoArray = DataHandler.getInstance(MemoMap.getInstance()).getAllClosestMemos(location);
-				MemoAdapter memoAdapter = new MemoAdapter(MemoMap.getInstance(), 0,
-						memoArray, location);	
+				memoAdapter = new MemoAdapter(MemoMap.getInstance(), 0,
+						memoArray, location);
 				getListView().setAdapter(memoAdapter);
 				super.onStart();
 			}
-		}
-		
-		public static class MemoBody extends Fragment {
-			private final String TAG = "NewMemoBodyFragment";
-			public MemoBody(){ }
 			
-			@Override
-			public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-					Bundle savedInstanceState) {
-				Log.d(TAG, "onCreateView");
-				return inflater.inflate(R.layout.fragment_newmemobody, container, false);
+			private void showModifyDialog(long id){
+				final Memo m = memoArray.get((int) id);
+
+				AlertDialog.Builder modifyDialogBuilder = new AlertDialog.Builder(context)
+						.setMessage(m.getMemoBody())
+						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Log.d(TAG, "Cancel");
+							}
+						})
+						.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								DataHandler.getInstance(MemoMap.getInstance())
+									.deleteMemo(m);
+								((BaseAdapter) getListView().getAdapter()).notifyDataSetChanged();	
+							}
+						})
+						.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Log.d(TAG, "Edit Memo");
+							}
+						})
+					.setTitle(m.getLocationName());
+				AlertDialog modifyMemo = modifyDialogBuilder.create();
+				modifyMemo.show();
 			}
-		}
-		
-		public static class MemoLoc extends Fragment{
-			final String CLASS = "MemoLocFragment";
-			public MemoLoc(){ }
-	
-			@Override
-			public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-					Bundle savedInstanceState) {
-				Log.d(CLASS, "onCreateView");
-				return inflater.inflate(R.layout.fragment_newmemoloc, container, false);
-			}		
 		}
 		
 		public static class OpenMemo extends Fragment{
@@ -549,72 +405,5 @@ public class MemoMapActivity extends Activity implements LocationListener, OnSee
 				return inflater.inflate(R.layout.dialog_viewmemo, container, false);
 			}
 		}
-		
-		public static class Settings extends PreferenceFragment {
-			public Settings(){ }
-		    @Override
-		    public void onCreate(Bundle savedInstanceState) {
-		        super.onCreate(savedInstanceState);
-		        addPreferencesFromResource(R.xml.preferences);
-		    }
-		}
-	}
-	/** Determines whether one Location reading is better than the current Location fix
-	  * @param location  The new Location that you want to evaluate
-	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-	  */
-	protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-		Log.d(TAG, "isBetterLocation");
-		Log.d(TAG, "Comparing (" + location.getLongitude() + ", " + location.getLatitude() + ")");
-		
-		final int TWO_MINUTES = 1000 * 60 * 2;
-	    if (currentBestLocation == null) {
-	        // A new location is always better than no location
-	        return true;
-	    }
-	    else Log.d(TAG, "With (" + currentBestLocation.getLongitude() + ", " + currentBestLocation.getLatitude() + ")");
-
-	    // Check whether the new location fix is newer or older
-	    long timeDelta = location.getTime() - currentBestLocation.getTime();
-	    boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-	    boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-	    boolean isNewer = timeDelta > 0;
-
-	    // If it's been more than two minutes since the current location, use the new location
-	    // because the user has likely moved
-	    if (isSignificantlyNewer) {
-	        return true;
-	    // If the new location is more than two minutes older, it must be worse
-	    } else if (isSignificantlyOlder) {
-	        return false;
-	    }
-
-	    // Check whether the new location fix is more or less accurate
-	    int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-	    boolean isLessAccurate = accuracyDelta > 0;
-	    boolean isMoreAccurate = accuracyDelta < 0;
-	    boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-	    // Check if the old and new location are from the same provider
-	    boolean isFromSameProvider = isSameProvider(location.getProvider(),
-	            currentBestLocation.getProvider());
-
-	    // Determine location quality using a combination of timeliness and accuracy
-	    if (isMoreAccurate) {
-	        return true;
-	    } else if (isNewer && !isLessAccurate) {
-	        return true;
-	    } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-	        return true;
-	    }
-	    return false;
-	}
-
-	/** Checks whether two providers are the same */
-	private boolean isSameProvider(String provider1, String provider2) {
-	    if (provider1 == null) {
-	      return provider2 == null;
-	    }
-	    return provider1.equals(provider2);
 	}
 }

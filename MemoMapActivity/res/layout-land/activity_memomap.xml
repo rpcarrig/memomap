@@ -6,13 +6,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="horizontal"
-    tools:context=".MainActivityFragments" >
+    tools:context=".MemoMapActivity" >
 
     <FrameLayout
         android:id="@+id/fragment_topcontainer"
+        android:layout_weight="1" 
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1" >
+        android:layout_height="fill_parent">
 	</FrameLayout>
 	    
 
@@ -20,8 +20,7 @@
         android:id="@+id/fragment_bottomcontainer"
         android:layout_weight="1"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:layout_height="fill_parent">
 	</FrameLayout>
 
 </LinearLayout>
