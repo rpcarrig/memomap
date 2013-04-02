@@ -1,195 +1,186 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mm_rl_main_view"
+    android:id="@+id/openmemo_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="false"
-    tools:context=".CreateMemoActivity" >
+    android:layout_alignParentTop="true"
+    android:orientation="vertical"
+    tools:context=".OpenMemoActivity" >
 
     <LinearLayout
-        android:id="@+id/viewmemofrag"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:id="@+id/memo_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
 
-        <Spinner
-            android:id="@+id/memoSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/memobodytext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:text="@string/memo"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/view_body"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="6dp"
+            android:background="@color/Yellow"
+            android:ems="10"
+            android:gravity="top"
+            android:lines="5"
+            android:maxLength="1000"
+            android:padding="8dp"
+            android:text="@string/nullstring"
+            android:textColor="@android:color/primary_text_light"
+            android:textIsSelectable="true"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tv_Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:text="@string/location_name"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/view_locname"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="6dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:padding="8dp"
+            android:text="@string/nullstring"
+            android:textColor="@android:color/white"
+            android:textIsSelectable="true"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingTop="4dp"
+        android:text="@string/date_created"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/view_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="4dp"
+        android:text="@string/nullstring"
+        android:textColor="@android:color/primary_text_dark"
+        android:textIsSelectable="true"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingTop="4dp"
+        android:text="@string/radius"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/view_radius"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="4dp"
+        android:text="@string/nullstring"
+        android:textColor="@android:color/primary_text_dark"
+        android:textIsSelectable="true"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/LongLatLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/longitude_layout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/tv_om_Title"
+                android:id="@+id/tv_Longitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
                 android:paddingTop="4dp"
-                android:text="@string/title"
-                android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/secondary_text_dark"
-                android:textSize="16sp" />
-
-           	<TextView
-           	    android:id="@+id/tv_om_TitleContents"
-           	    android:layout_width="match_parent"
-           	    android:layout_height="0dp"
-           	    android:layout_margin="6dp"
-           	    android:layout_weight="1"
-           	    android:text="@string/nullstring"
-           	    android:textColor="@android:color/white"
-           	    android:textIsSelectable="true"
-           	    android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/tv_om_Body"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:text="@string/body"
+                android:text="@string/longitude"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@android:color/secondary_text_dark"
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_om_BodyContents"
+                android:id="@+id/view_long"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_margin="6dp"
-                android:layout_weight="1"
-                android:lines="5"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingTop="4dp"
                 android:text="@string/nullstring"
                 android:textColor="@android:color/primary_text_dark"
-                android:textIsSelectable="true"
-                android:textSize="24sp" />
-
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal" >
+            android:id="@+id/latitude_layout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_Latitude"
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="vertical" >
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:text="@string/latitude"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/secondary_text_dark"
+                android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/tv_Longitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/longitude"
-                    android:textAllCaps="true"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@android:color/secondary_text_dark"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_LongValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/nullstring"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tv_Latitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/latitude"
-                    android:textAllCaps="true"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@android:color/secondary_text_dark"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/edit_lat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/nullstring"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/view_lat"
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="vertical" >
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingTop="4dp"
+                android:text="@string/nullstring"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/tv_radius"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/radius"
-                    android:textAllCaps="true"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@android:color/secondary_text_dark"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_radiusvalue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/nullstring"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textSize="12sp" />
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        style="@android:style/ButtonBar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:divider="?android:attr/dividerVertical"
-        android:dividerPadding="8dp"
-        android:height="48dp"
-        android:orientation="horizontal"
-        android:showDividers="middle" >
-
-        <Button
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:onClick="clickEdit"            
-            android:text="@string/editmemo"
-            android:textAllCaps="true"/>
-        
-        <Button
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:onClick="clickOk"
-            android:text="@string/ok"
-            android:textAllCaps="true" />
-        
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

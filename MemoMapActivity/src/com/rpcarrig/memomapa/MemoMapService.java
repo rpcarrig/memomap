@@ -3,6 +3,7 @@ package com.rpcarrig.memomapa;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,7 +17,6 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -35,7 +35,8 @@ public class MemoMapService extends Service implements LocationListener {
 	private Location location = null,
 					 lastLocation = null;
 	private LocationManager locationManager = null;
-	private NotificationCompat.Builder noteBuilder = null;
+	private Notification.Builder ongoingNote,
+								 newMemoNote;
 	private NotificationManager noteManager = null;		
 	
 	private final IBinder binder = new GpsBinder();
@@ -61,7 +62,11 @@ public class MemoMapService extends Service implements LocationListener {
 		super.onCreate();
 		Log.d(TAG, "onCreate");
 
+		noteManager = (NotificationManager)
+				getSystemService(Context.NOTIFICATION_SERVICE);
 		startGps();
+		
+		startForeground(1, ongoingNote.getNotification());
 	}
 
 	@Override
@@ -79,13 +84,16 @@ public class MemoMapService extends Service implements LocationListener {
 	public void onLocationChanged(Location arg0) {
 		Log.d(TAG, "onLocationChanged");
 		if (locationManager != null){
-			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			location = locationManager
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if(location != null){
 				latitude = location.getLatitude();
 				longitude = location.getLongitude();
 			}
 		}
-		updateNote("Location updated. MemoMap is searching...");
+		ongoingNote.setWhen(0);
+		ongoingNote.setTicker("Location updated. MemoMap is searching...");
+		noteManager.notify(1, ongoingNote.getNotification());	
 		
 		float[] results = { -1, -1, -1 };
 		ArrayList<Memo> memoList = DataHandler.getInstance(this).getAllMemos();
@@ -93,7 +101,7 @@ public class MemoMapService extends Service implements LocationListener {
 			Location.distanceBetween(latitude, longitude, m.getLatitude(), 
 					m.getLongitude(), results);
 			if (results[0] <= m.getRadius())
-				updateNote(m.getMemoBody(), m.getLocationName());
+				updateNote(m);
 		}
 	}
 	
@@ -200,12 +208,12 @@ public class MemoMapService extends Service implements LocationListener {
 		
 		Intent intent = new Intent(this, MemoMapActivity.class);
 		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-		noteBuilder =
-		        new NotificationCompat.Builder(this)
+		newMemoNote = new Notification.Builder(this);
+		ongoingNote =
+		        new Notification.Builder(this)
 		        .setContentTitle("MemoMap")
 		        .setContentText("Searching for memos...")
 		        .setContentIntent(pIntent)
-		        //.setOngoing(true)
 		        .setSmallIcon(R.drawable.ic_launcher);
 	}
 	
@@ -236,18 +244,22 @@ public class MemoMapService extends Service implements LocationListener {
 		locationManager.removeUpdates(this);
 	}
 	
-	public void updateNote(String ticker){
-		noteBuilder.setTicker(ticker);
-		noteManager.notify(0, noteBuilder.build());		
-	}
-	
-	public void updateNote(String memo, String loc){
+	public void updateNote(Memo m){
 		Log.d(TAG, "updateNote");
-		String s = "@" + loc + ": " + memo;
-		noteBuilder.setContentText(loc);
-		noteBuilder.setContentTitle(memo);
-		noteBuilder.setTicker(s);
-		noteManager.notify(0, noteBuilder.build());
+		String s = "@" + m.getLocationName() + ": " + m.getMemoBody();
+		Intent intent = new Intent(this, OpenMemoActivity.class);
+		intent.putExtra("id", m.getId());
+		
+		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+		
+		newMemoNote.setContentIntent(pIntent);
+		newMemoNote.setContentText(m.getLocationName());
+		newMemoNote.setContentTitle(m.getMemoBody());
+		newMemoNote.setLights(0xFFFFFF00, 500, 500);
+		newMemoNote.setTicker(s);
+		newMemoNote.setVibrate(new long[]{100, 200, 100, 200});
+		newMemoNote.setSmallIcon(R.drawable.post_it3b);
+		noteManager.notify(0, newMemoNote.getNotification());
 	}	
 	
 	public class GpsBinder extends Binder{

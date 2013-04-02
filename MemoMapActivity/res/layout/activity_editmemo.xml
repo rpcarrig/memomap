@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/viewmemofrag"
+    android:id="@+id/openmemo_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
@@ -89,7 +89,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/edit_long"
+                android:id="@+id/view_long"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
@@ -111,7 +111,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/edit_lat"
+                android:id="@+id/view_lat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
@@ -122,14 +122,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/LinearLayout1"
+            android:id="@+id/latitude_layout"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/tv_Radius"
+                android:id="@+id/tv_Date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"

@@ -13,10 +13,8 @@ import android.location.Location;
 import android.text.format.Time;
 
 import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Memo {
 	private int id,

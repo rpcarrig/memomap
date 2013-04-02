@@ -7,7 +7,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/TextView01"
+        android:id="@+id/view_radius"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="false"
@@ -23,7 +23,7 @@
         android:id="@+id/newMemoLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TextView01"
+        android:layout_below="@+id/view_radius"
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:inputType="textEmailSubject" >
@@ -74,7 +74,7 @@
         android:textStyle="italic" />
 
     <TextView
-        android:id="@+id/tv_Radius"
+        android:id="@+id/tv_Date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -119,7 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tv_Radius"
+        android:layout_below="@+id/tv_Date"
         android:gravity="center"
         android:paddingBottom="4dp"
         android:text="@string/mm"

@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-sdk
         android:minSdkVersion="13"
@@ -27,6 +29,13 @@
         android:label="@string/app_name"
         android:name=".MemoMap"
         android:theme="@android:style/Theme.Holo">
+        
+        <receiver android:name=".MemoReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        
         <uses-library
 		    android:required="true"
 		    android:name="com.google.android.maps" />
@@ -46,14 +55,26 @@
             android:label="@string/create_memo" >
         </activity>
         
-		<activity 
-            android:name="com.rpcarrig.memomapa.SettingsActivity"
-            android:label="@string/settings" >
-        </activity>
-        
 		<activity
 		    android:name="com.rpcarrig.memomapa.EditMemoActivity"
-		    android:label="@string/edit" />
+		    android:label="@string/editmemo" />
+        
+		<activity
+		    android:name="com.rpcarrig.memomapa.OpenMemoActivity"
+		    android:label="@string/memo" />
+		
+		<activity 
+            android:name="com.rpcarrig.memomapa.SettingsActivity"
+            android:label="@string/settings" />
+		
+		<activity android:name="org.acra.CrashReportDialog"
+	        android:theme="@android:style/Theme.Dialog"
+	        android:launchMode="singleInstance"
+	        android:excludeFromRecents="true"
+	        android:finishOnTaskLaunch="true" />
+		
+		<service
+		    android:name="com.rpcarrig.memomapa.MemoMapService" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
