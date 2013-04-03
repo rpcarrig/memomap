@@ -17,6 +17,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 public class Memo {
+	private boolean seen,
+					shared;
 	private int id,
 				radius;
 	private double distance,
@@ -24,7 +26,8 @@ public class Memo {
 				   longitude;
 	private Circle circle;
 	private Marker marker;
-	private String memoBody,
+	private String androidId,
+				   memoBody,
 				   memoDate,
 				   locationName;
 
@@ -79,7 +82,11 @@ public class Memo {
 	/**
 	 * Setter and getters!
 	 */
+	
+	public boolean getSeen()	   { return seen;		  }
+	public boolean getShared()	   { return shared;		  }
 	public int getId()			   { return id; 		  }
+	public String getAndroidId()   { return androidId;	  }
 	public String getMemoBody()    { return memoBody;  	  }
 	public String getMemoDate()    { return memoDate;  	  }
 	public String getLocationName(){ return locationName; }
@@ -103,6 +110,9 @@ public class Memo {
 	public LatLng getLatLong()  { return new LatLng(latitude, longitude); }
 	public Marker getMarker(){ return marker; }
 	
+	public void setSeen(boolean b)		 { seen = b;		 }
+	public void setShared(boolean b)	 { shared = b;		 }
+	public void setAndroidId(String s)	 { androidId = s;	 }
 	public void setDistance(double d)    { distance = d;     }
 	public void setId(int i)		     { id = i; 	         }
 	public void setLatitude(double l)    { latitude = l;     }

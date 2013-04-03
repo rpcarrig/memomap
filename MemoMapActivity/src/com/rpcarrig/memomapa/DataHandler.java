@@ -30,6 +30,9 @@ public class DataHandler extends SQLiteOpenHelper {
 		KEY_MLAT   = "memo_latitude",
 		KEY_MLONG  = "memo_longitude",
 		KEY_MRAD   = "memo_radius",
+		// add boolean for shared, seen
+		// string android id (creator)
+		
 		
 		KEY_FID	  = "fave_id",
 		KEY_FNAME = "fave_name",
@@ -269,16 +272,6 @@ public class DataHandler extends SQLiteOpenHelper {
 				Double.parseDouble(cursor.getString(4)));
 		cursor.close();
 		return fave;
-	}
-	
-	public ArrayList<Memo> getDummyMemos(){
-		Log.d(CLASS, "getDummyMemos");
-		ArrayList<Memo> memoArray = new ArrayList<Memo>();
-		memoArray.add(new Memo("Name", "Body", 36, -79, 25));
-		memoArray.add(new Memo("Milk", "get some", 36.07, -79.85, 100));
-		memoArray.add(new Memo("Party", "Don't forget!", 36.066, -79.848, 50));
-		memoArray.add(new Memo("Bills", "be turrible", 36.0665, -79.8487, 25));
-		return memoArray;
 	}
 	
 	public ArrayList<LatLng> getMemoLocations(){

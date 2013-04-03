@@ -17,7 +17,9 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -37,7 +39,7 @@ public class MemoMapService extends Service implements LocationListener {
 	private LocationManager locationManager = null;
 	private Notification.Builder ongoingNote,
 								 newMemoNote;
-	private NotificationManager noteManager = null;		
+	private NotificationManager noteManager = null;
 	
 	private final IBinder binder = new GpsBinder();
 	
@@ -64,8 +66,8 @@ public class MemoMapService extends Service implements LocationListener {
 
 		noteManager = (NotificationManager)
 				getSystemService(Context.NOTIFICATION_SERVICE);
-		startGps();
 		
+		startGps();
 		startForeground(1, ongoingNote.getNotification());
 	}
 
@@ -73,7 +75,7 @@ public class MemoMapService extends Service implements LocationListener {
 	public void onDestroy() {
 		super.onDestroy();
 		Log.d(TAG, "onDestroy");
-		noteManager.cancel(0);
+		noteManager.cancel(1);
 		
 		if(locationManager != null){
 			locationManager.removeUpdates(MemoMapService.this);
@@ -91,17 +93,19 @@ public class MemoMapService extends Service implements LocationListener {
 				longitude = location.getLongitude();
 			}
 		}
-		ongoingNote.setWhen(0);
-		ongoingNote.setTicker("Location updated. MemoMap is searching...");
+		ongoingNote.setTicker("Location changed. MemoMap is searching...");
 		noteManager.notify(1, ongoingNote.getNotification());	
 		
 		float[] results = { -1, -1, -1 };
 		ArrayList<Memo> memoList = DataHandler.getInstance(this).getAllMemos();
+		int i = 2;
 		for (Memo m : memoList) {
 			Location.distanceBetween(latitude, longitude, m.getLatitude(), 
 					m.getLongitude(), results);
 			if (results[0] <= m.getRadius())
-				updateNote(m);
+				//updateNote(m);
+				noteManager.notify(i, memoNote(m));
+			i++;
 		}
 	}
 	
@@ -212,7 +216,7 @@ public class MemoMapService extends Service implements LocationListener {
 		ongoingNote =
 		        new Notification.Builder(this)
 		        .setContentTitle("MemoMap")
-		        .setContentText("Searching for memos...")
+		        .setContentText("Looking for memos...")
 		        .setContentIntent(pIntent)
 		        .setSmallIcon(R.drawable.ic_launcher);
 	}
@@ -244,23 +248,24 @@ public class MemoMapService extends Service implements LocationListener {
 		locationManager.removeUpdates(this);
 	}
 	
-	public void updateNote(Memo m){
+	public Notification memoNote(Memo m){
 		Log.d(TAG, "updateNote");
 		String s = "@" + m.getLocationName() + ": " + m.getMemoBody();
-		Intent intent = new Intent(this, OpenMemoActivity.class);
-		intent.putExtra("id", m.getId());
 		
-		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-		
-		newMemoNote.setContentIntent(pIntent);
+		newMemoNote.setAutoCancel(true);
 		newMemoNote.setContentText(m.getLocationName());
 		newMemoNote.setContentTitle(m.getMemoBody());
 		newMemoNote.setLights(0xFFFFFF00, 500, 500);
 		newMemoNote.setTicker(s);
 		newMemoNote.setVibrate(new long[]{100, 200, 100, 200});
 		newMemoNote.setSmallIcon(R.drawable.post_it3b);
-		noteManager.notify(0, newMemoNote.getNotification());
-	}	
+		
+		Notification memoNote = newMemoNote.getNotification();
+		Intent intent = new Intent(this, OpenMemoActivity.class);
+		intent.putExtra("id", m.getId());
+		memoNote.contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+		return memoNote;
+	}
 	
 	public class GpsBinder extends Binder{
 		MemoMapService getService(){

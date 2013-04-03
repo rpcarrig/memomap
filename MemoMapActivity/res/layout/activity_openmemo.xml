@@ -5,6 +5,9 @@
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
     android:orientation="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:scrollbarStyle="insideOverlay"
+    android:scrollbars="vertical"
     tools:context=".OpenMemoActivity" >
 
     <LinearLayout
@@ -30,7 +33,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_margin="6dp"
-            android:background="@color/Yellow"
+            android:background="@android:color/background_light"
             android:ems="10"
             android:gravity="top"
             android:lines="5"

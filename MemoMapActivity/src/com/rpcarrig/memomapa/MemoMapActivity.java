@@ -118,13 +118,12 @@ public class MemoMapActivity extends Activity implements LocationListener {
 		googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
 		googleMap.setMapType(mapType);
 		googleMap.setMyLocationEnabled(true);
-
-		if(!circlesExist) new Thread(drawMemoMarkers).run();
 	}
 
 	@Override
 	public void onResume(){	
 		Log.d(TAG, "onResume"); 
+		if(!circlesExist) new Thread(drawMemoMarkers).run();
 		super.onResume();
 	}
 
