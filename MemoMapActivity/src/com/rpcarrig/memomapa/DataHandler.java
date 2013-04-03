@@ -222,8 +222,10 @@ public class DataHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		db.close();
-		
-		final LatLng newLoc = loc;
+
+		final LatLng newLoc;
+		if(loc != null) newLoc = loc;
+		else newLoc = new LatLng(39.8282, -98.5795);
 		Collections.sort(memoList, new Comparator<Memo>() {
 		    public int compare(Memo lhs, Memo rhs) {
 		        return (int) (lhs.getDistance(newLoc) - rhs.getDistance(newLoc));

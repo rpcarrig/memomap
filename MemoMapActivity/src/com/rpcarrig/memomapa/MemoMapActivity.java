@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,18 +43,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MemoMapActivity extends Activity implements LocationListener {
-	private static final String TAG = "MemoMapActivity";
+    private static final String TAG = "MemoMapActivity";
 	private static final long MIN_DISTANCE_CHANGE	 = 10,
 							  MIN_MS_BETWEEN_UPDATES = 1000 * 10 * 1;
 
-	private static Context context;
-	private static LatLng latLongLocation;
-	private static GoogleMap googleMap;
-	private Location location;
-	private MapFragment mapFragment;
-	private Fragments.MemoList memoListFragment;
-	private LocationManager locationManager = null;
-	private SharedPreferences sharedPreferences;
+	private static Context sContext;
+	private static LatLng sLatLongLocation;
+	private static GoogleMap sGoogleMap;
+	private Location mLocation;
+	private Fragments.MemoList mMemoListFragment;
+	private LocationManager mLocationManager = null;
 
 	boolean circlesExist	 = false,
 			listExists		 = false,
@@ -61,14 +61,16 @@ public class MemoMapActivity extends Activity implements LocationListener {
 			isGpsEnabled	 = false,
 			isNetworkEnabled = false;
 
-	ProgressDialog dialog;
-	MemoMapService memoMapService;
+	ArrayList<Memo> mMemoArray;
+	GoogleMap mGoogleMap;
+	ListView mListView;
+	MemoAdapter mMemoAdapter;
+	ProgressDialog mDialog;
 	Runnable drawMemoMarkers = new Runnable(){
 		public void run(){
-			googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
 			for(Memo m : DataHandler.getInstance(MemoMap
 					.getInstance()).getAllMemos()){
-				Circle circ = googleMap.addCircle(new CircleOptions()
+				Circle circ = sGoogleMap.addCircle(new CircleOptions()
 					.center(m.getLatLong())
 					.fillColor(0x25AA0000)
 					.strokeColor(0xFFAA0000)
@@ -81,69 +83,54 @@ public class MemoMapActivity extends Activity implements LocationListener {
 					.position(m.getLatLong())
 					.snippet(m.getLocationName())
 					.title(m.getMemoBody());
-				m.setMarker(googleMap.addMarker(markOpt));
-				Log.d(TAG, m.getMarker().toString());
+				m.setMarker(sGoogleMap.addMarker(markOpt));
 			}
 			circlesExist = true;
 		}
 	};
+	SharedPreferences mSharedPreferences;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
 		setContentView(R.layout.activity_memomap);		
-		context = this;
-		dialog = new ProgressDialog(context);
-		dialog.setTitle(R.string.waiting);
-		dialog.setCancelable(false);
-		if(location == null) dialog.show();
+
+		mSharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(MemoMap.getInstance());
 		
+		mDialog = new ProgressDialog(this);
+		mDialog.setTitle(R.string.waiting);
+		mDialog.setCancelable(false);
+		if(mLocation == null) mDialog.show();
+		
+		int mMapType = Integer.parseInt(mSharedPreferences.getString("prefMapType", "2"));
+		mGoogleMap = ((MapFragment)getFragmentManager()
+				.findFragmentById(R.id.memo_map)).getMap();
+		mGoogleMap.setMapType(mMapType);
+		mGoogleMap.setMyLocationEnabled(true);
+		
+		mListView = (ListView) findViewById(R.id.memo_list);
+		//mMemoArray = DataHandler.getInstance(MemoMap.getInstance()).getAllClosestMemos(location);
+		//mMemoAdapter = new MemoAdapter(MemoMap.getInstance(), 0, memoArray, location);
+		
+		sContext = MemoMap.getInstance();
+
 		Intent serviceIntent = new Intent(this, MemoMapService.class);
-		startService(serviceIntent);
-		
 		startGps();
-		
-		addGoogleMap();
+		startService(serviceIntent);
 	}
 
 	@Override
 	public void onStart(){ 
-		Log.d(TAG, "onStart");
 		super.onStart();
-
-		int mapType = Integer.parseInt(sharedPreferences.getString("prefMapType", "2"));
-
-		googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
-		googleMap.setMapType(mapType);
-		googleMap.setMyLocationEnabled(true);
 	}
 
 	@Override
 	public void onResume(){	
-		Log.d(TAG, "onResume"); 
-		if(!circlesExist) new Thread(drawMemoMarkers).run();
+		//if(!circlesExist) new Thread(drawMemoMarkers).run();
 		super.onResume();
-	}
-
-	@Override
-	public void onPause(){
-		Log.d(TAG, "onPause");
-		super.onPause();
-	}
-
-	@Override
-	public void onStop(){
-		Log.d(TAG, "onStop");
-		super.onDestroy();
-	}
-
-	@Override
-	public void onDestroy(){
-		Log.d(TAG, "onDestroy");
-		super.onDestroy();
-		//if(gpsBound) unbindService(serviceConnection);
 	}
 
 	@Override
@@ -161,30 +148,34 @@ public class MemoMapActivity extends Activity implements LocationListener {
 	@Override
 	public void onLocationChanged(Location location) {
 		Log.d(TAG, "onLocationChanged");
-		
+		if(mDialog.isShowing()) mDialog.cancel();
 		location = getFreshLocation();
+		/**
 		if (!listExists){
 			addMemoList();
 			listExists = true;
-		}
-		
-		if(dialog.isShowing()) dialog.cancel();
+		}*/
+		LatLng mLatLongLocation = new LatLng(location.getLatitude(), location.getLongitude());
+		mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLatLongLocation, 17));
 	}
 
 	@Override
 	public boolean onOptionsItemSelected( MenuItem item ){
 		Log.d(TAG, "onOptionsItemSelected");
 	    switch(item.getItemId()){
-	    	case R.id.menu_resetview:  resetView();
-	    							   return true;
-		    case R.id.menu_creatememo: createMemo();
-		    						   return true;
-		    case R.id.menu_settings:   showSettings();
-		    						   return true;
-	    	default: return super.onOptionsItemSelected(item);
+	    	case R.id.menu_resetview:
+	    		resetView();
+	    		return true;
+		    case R.id.menu_creatememo:
+		    	createMemo();
+		    	return true;
+		    case R.id.menu_settings:
+		    	showSettings();
+		    	return true;
+	    	default:
+	    		return super.onOptionsItemSelected(item);
 	    }
 	}
-
 
 	@Override
 	public void onProviderDisabled(String provider) { }
@@ -198,41 +189,32 @@ public class MemoMapActivity extends Activity implements LocationListener {
 	/**
 	 * 
 	 */
-	private void addGoogleMap(){
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MemoMap.getInstance());
-		int mapType = Integer.parseInt(sharedPreferences.getString("prefMapType", "2"));
-		mapFragment = MapFragment.newInstance(new GoogleMapOptions()
-			.camera(new CameraPosition(latLongLocation, 12, 0, 0))
-			.mapType(mapType));
-
-		getFragmentManager().beginTransaction()
-				.replace(R.id.fragment_topcontainer, mapFragment, "map")
-				.commit();
-	}
 	private void addMemoList(){ 
-		memoListFragment = new Fragments.MemoList();
-		double[] coords = {latLongLocation.latitude, latLongLocation.longitude};
+		mMemoListFragment = new Fragments.MemoList();
+		double[] coords = {sLatLongLocation.latitude, sLatLongLocation.longitude};
 		Bundle bundle = new Bundle();
 		bundle.putDoubleArray("location", coords);
-		memoListFragment.setArguments(bundle);
+		mMemoListFragment.setArguments(bundle);
 
 		getFragmentManager().beginTransaction()
-			.replace(R.id.fragment_bottomcontainer, memoListFragment, "memoList")
+			//.replace(R.id.fragment_bottomcontainer, mMemoListFragment, "memoList")
 			.commit();
 	}
 	
 	private void createMemo(){
-		double latitude  = latLongLocation.latitude,
-			   longitude = latLongLocation.longitude;
+		double latitude  = sLatLongLocation.latitude,
+			   longitude = sLatLongLocation.longitude;
 
-		Intent createMemo = new Intent(MemoMapActivity.this, CreateMemoActivity.class);
+		//Intent createMemo = new Intent(MemoMapActivity.this, CreateMemoActivity.class);
+		Intent createMemo = new Intent(this, CreateMemoFlipperActivity.class);
+		
 		Bundle bundle = new Bundle();
 
 		bundle.putDouble("lat", latitude);
 		bundle.putDouble("lon", longitude);
 		createMemo.putExtras(bundle);
 
-		startActivity(createMemo);
+		startActivity(createMemo);	
 	}
 
 	public Location getFreshLocation(){
@@ -248,12 +230,12 @@ public class MemoMapActivity extends Activity implements LocationListener {
 			// If the network provider is available, get its location first.
 			if(isNetworkEnabled){
 				Log.d("geoLocation", "Network is enabled.");
-				if (locationManager != null){
-					location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					if(location != null){
-						latitude = location.getLatitude();
-						longitude = location.getLongitude();
-						latLongLocation = new LatLng(latitude, longitude);
+				if (mLocationManager != null){
+					mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+					if(mLocation != null){
+						latitude = mLocation.getLatitude();
+						longitude = mLocation.getLongitude();
+						sLatLongLocation = new LatLng(latitude, longitude);
 					}
 				}
 			}
@@ -261,27 +243,27 @@ public class MemoMapActivity extends Activity implements LocationListener {
 			// If the GPS is also available, get coordinates using GPS services.
 			if(isGpsEnabled){
 				Log.d("geoLocation", "GPS is enabled.");
-				if (locationManager != null){
-					location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-					if(location != null){
-						latitude = location.getLatitude();
-						longitude = location.getLongitude();
-						latLongLocation = new LatLng(latitude, longitude);
+				if (mLocationManager != null){
+					mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					if(mLocation != null){
+						latitude = mLocation.getLatitude();
+						longitude = mLocation.getLongitude();
+						sLatLongLocation = new LatLng(latitude, longitude);
 					}
 				}
 			}
 		}
-		return location;
+		return mLocation;
 	}
 
 	private void resetView(){
 		Log.d(TAG, "resetView");
 
-		if(location != null){
-			latLongLocation = new LatLng(
-					location.getLatitude(), 
-					location.getLongitude());
-			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLongLocation, 12), 1000, null);
+		if(mLocation != null){
+			sLatLongLocation = new LatLng(
+					mLocation.getLatitude(), 
+					mLocation.getLongitude());
+			sGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sLatLongLocation, 12), 1000, null);
 		}
 	}
 
@@ -292,13 +274,13 @@ public class MemoMapActivity extends Activity implements LocationListener {
 
 	private void startGps() {
 		try{
-			locationManager	= (LocationManager)this.getSystemService(LOCATION_SERVICE);
-			isGpsEnabled		= locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			isNetworkEnabled	= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+			mLocationManager	= (LocationManager)this.getSystemService(LOCATION_SERVICE);
+			isGpsEnabled		= mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			isNetworkEnabled	= mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
+			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
 
-			location = getFreshLocation();
+			mLocation = getFreshLocation();
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -309,11 +291,11 @@ public class MemoMapActivity extends Activity implements LocationListener {
 	private static void viewMemoOnMap(long id){
 		Log.d(TAG, "viewMemo (id: " + id + ")");
 		Memo m = DataHandler.getInstance(MemoMap.getInstance())
-				.getAllClosestMemos(latLongLocation).get((int)id);
+				.getAllClosestMemos(sLatLongLocation).get((int)id);
 
 		if(m != null){
 			if (m.getMarker() != null) m.getMarker().showInfoWindow();
-			googleMap.animateCamera(CameraUpdateFactory
+			sGoogleMap.animateCamera(CameraUpdateFactory
 				.newLatLngZoom(m.getLatLong(), 17), 2500, null);
 		}
 	}
@@ -383,8 +365,6 @@ public class MemoMapActivity extends Activity implements LocationListener {
 			public void onStart(){
 				Log.d(TAG, "onStart");
 				memoArray = DataHandler.getInstance(MemoMap.getInstance()).getAllClosestMemos(location);
-				memoAdapter = new MemoAdapter(MemoMap.getInstance(), 0,
-						memoArray, location);
 				getListView().setAdapter(memoAdapter);
 				
 				super.onStart();
@@ -393,7 +373,7 @@ public class MemoMapActivity extends Activity implements LocationListener {
 			private void showModifyDialog(final long id){
 				final Memo m = memoArray.get((int) id);
 
-				AlertDialog.Builder modifyDialogBuilder = new AlertDialog.Builder(context)
+				AlertDialog.Builder modifyDialogBuilder = new AlertDialog.Builder(sContext)
 						.setMessage(m.getMemoBody())
 						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 							@Override
@@ -413,7 +393,7 @@ public class MemoMapActivity extends Activity implements LocationListener {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								Log.d(TAG, "Edit Memo");
-								Intent editIntent = new Intent(MemoMapActivity.context, EditMemoActivity.class);
+								Intent editIntent = new Intent(MemoMapActivity.sContext, EditMemoActivity.class);
 								editIntent.putExtra("id", m.getId());
 								editIntent.putExtra("lat", location.latitude);
 								editIntent.putExtra("lon", location.longitude);	

@@ -1,23 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_fragments_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context=".MainActivityFragments" >
+    tools:context=".MemoMapActivity" >
 
     <FrameLayout
         android:id="@+id/fragment_topcontainer"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1" >
+        
+         <fragment
+            class="com.google.android.gms.maps.MapFragment"
+            android:id="@+id/memo_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 	</FrameLayout>
-	    
-	<FrameLayout
-	    android:id="@+id/fragment_bottomcontainer"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_weight="1">
-	</FrameLayout>
+	
+    <ViewFlipper
+        android:id="@+id/memo_viewflipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
+
+        <ListView
+            android:id="@+id/memo_list"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+        
+    </ViewFlipper>
 
 </LinearLayout>

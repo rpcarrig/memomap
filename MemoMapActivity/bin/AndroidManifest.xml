@@ -55,6 +55,10 @@
             android:label="@string/create_memo" >
         </activity>
         
+        <activity
+            android:name="com.rpcarrig.memomapa.CreateMemoFlipperActivity"
+            android:label="@string/create_memo" />
+        
 		<activity
 		    android:name="com.rpcarrig.memomapa.EditMemoActivity"
 		    android:label="@string/editmemo" />
