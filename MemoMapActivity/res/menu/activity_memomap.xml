@@ -1,17 +1,35 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_creatememo"
-        android:title="@string/create_memo"
-        android:showAsAction="always|withText"
-        android:icon="@android:drawable/ic_menu_edit" />
-    
-     <item android:id="@+id/menu_resetview"
-        android:title="@string/reset_view"
-        android:showAsAction="ifRoom|collapseActionView" 
-        android:icon="@android:drawable/ic_menu_mapmode"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"
-        android:orderInCategory="100" 
-        android:showAsAction="never|ifRoom" 
-        android:icon="@android:drawable/ic_menu_preferences"/>
+    <item
+        android:id="@+id/menu_creatememo"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:showAsAction="always|withText"
+        android:title="@string/create_memo">
+        <menu>
+            <item
+                android:id="@+id/menu_createhere"
+                android:icon="@android:drawable/ic_menu_mylocation"
+                android:title="@string/create_here"/>
+            <item
+                android:id="@+id/menu_searchaddr"
+                android:icon="@android:drawable/ic_dialog_map"
+                android:title="@string/search"/>
+            <item
+                android:id="@+id/menu_choosefave"
+                android:icon="@android:drawable/ic_menu_myplaces"
+                android:title="@string/favorites"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_resetview"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:title="@string/reset_view"/>
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="100"
+        android:showAsAction="never|ifRoom"
+        android:title="@string/menu_settings"/>
+
 </menu>

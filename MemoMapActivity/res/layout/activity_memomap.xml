@@ -4,6 +4,7 @@
     android:id="@+id/main_fragments_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:baselineAligned="false"
     android:orientation="vertical"
     tools:context=".MemoMapActivity" >
 
@@ -18,8 +19,8 @@
             android:id="@+id/memo_map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-	</FrameLayout>
-	
+    </FrameLayout>
+        
     <ViewFlipper
         android:id="@+id/memo_viewflipper"
         android:layout_width="match_parent"
@@ -31,6 +32,197 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent" />
         
+        <ScrollView
+            android:id="@+id/scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+            
+            <LinearLayout 
+                android:id="@+id/openmemo_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:id="@+id/memo_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/memobodytext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/memo"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@android:color/secondary_text_dark"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/view_body"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_margin="6dp"
+                        android:background="@android:color/background_light"
+                        android:ems="10"
+                        android:gravity="top"
+                        android:lines="5"
+                        android:maxLength="1000"
+                        android:padding="8dp"
+                        android:text="@string/nullstring"
+                        android:textColor="@android:color/primary_text_light"
+                        android:textIsSelectable="true"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/tv_Title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/location_name"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@android:color/secondary_text_dark"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/view_locname"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:padding="8dp"
+                        android:text="@string/nullstring"
+                        android:textColor="@android:color/white"
+                        android:textIsSelectable="true"
+                        android:textSize="24sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_Date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/date_created"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/secondary_text_dark"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/view_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/nullstring"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/TextView02"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/radius"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/secondary_text_dark"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/view_radius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="4dp"
+                    android:text="@string/nullstring"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textIsSelectable="true"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:id="@+id/LongLatLayout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:id="@+id/longitude_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/tv_Longitude"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/longitude"
+                            android:textAllCaps="true"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="@android:color/secondary_text_dark"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/view_long"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/nullstring"
+                            android:textColor="@android:color/primary_text_dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/latitude_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/tv_Latitude"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/latitude"
+                            android:textAllCaps="true"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="@android:color/secondary_text_dark"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/view_lat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/nullstring"
+                            android:textColor="@android:color/primary_text_dark"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
     </ViewFlipper>
+    
+    
 
 </LinearLayout>

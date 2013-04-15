@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="mapType">
+	    <item name="1">Normal</item>
+	    <item name="2">Satellite</item>
+	   	<item name="3">Terrain</item>
+	    <item name="4">Hybrid</item>
+	</string-array>
+	<string-array name="mapTypeValues">
+	    <item name="1">1</item>
+	    <item name="2">2</item>
+	    <item name="3">3</item>
+	    <item name="4">4</item>
+	</string-array>
+	<string-array name="locs">
+	    <item name="1">Use current location</item>
+	    <item name="2">Select from favorites</item>
+	    <item name="3">Search</item>
+	</string-array>
+</resources>
