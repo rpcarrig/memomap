@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory
+        android:title="Map Settings"
+        android:key="pref_key_map_settings">
+        <ListPreference
+            android:key="prefMapType"
+            android:title="Map Type"
+            android:entries="@array/mapType" />
+	</PreferenceCategory>
+</PreferenceScreen>

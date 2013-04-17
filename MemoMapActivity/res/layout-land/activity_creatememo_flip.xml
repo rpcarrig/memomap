@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flipperlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal" >
+    
+    <FrameLayout
+        android:id="@+id/create_mapcontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
+        
+        <fragment
+		    class="com.google.android.gms.maps.MapFragment"
+		    android:id="@+id/create_map"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"/>
+	</FrameLayout>
+    
+	<ViewFlipper
+	    android:id="@+id/viewflipper1"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_weight="1" >
+	    
+	    <RelativeLayout
+	        android:id="@+id/layout1"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" >
+	        
+	            <TextView
+			        android:id="@+id/memobodytext"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentLeft="true"
+			        android:layout_alignParentTop="true"
+			        android:paddingLeft="8dp"
+			        android:paddingTop="4dp"
+			        android:text="@string/memo"
+			        android:textAllCaps="true"
+			        android:textAppearance="?android:attr/textAppearanceLarge"
+			        android:textColor="@android:color/white"
+			        android:textSize="16sp" />
+			
+			    <EditText
+			        android:id="@+id/newmemo_body"
+			        android:layout_width="match_parent"
+			        android:layout_height="fill_parent"
+			        android:layout_above="@+id/buttonbarB"
+			        android:layout_alignParentLeft="true"
+			        android:layout_below="@+id/memobodytext"
+			        android:layout_margin="6dp"
+			        android:ems="10"
+			        android:gravity="top"
+			        android:hint="@string/body_hint"
+			        android:inputType="textMultiLine"
+			        android:lines="5"
+			        android:maxLength="1000"
+			        android:minLines="2"
+			        android:textColor="@android:color/white" />
+			
+			    <LinearLayout
+			        android:id="@+id/buttonbarB"
+			        style="?android:attr/buttonBarStyle"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentBottom="true"
+			        android:layout_alignParentRight="false"
+			        android:gravity="bottom" >
+			        
+			        <Button
+			            android:id="@+id/cancel_newmemo"
+			           	style="?android:attr/buttonBarButtonStyle"
+			           	android:layout_width="0dp"
+			            android:layout_height="wrap_content"
+			            android:layout_weight="1"
+					    android:onClick="cancelMemo"
+					    android:text="@string/cancel"
+					    android:textAllCaps="true" />
+				    <Button
+				        android:id="@+id/continue_button"
+				        style="?android:attr/buttonBarButtonStyle"
+				        android:layout_width="0dp"
+			            android:layout_height="wrap_content"
+			            android:layout_weight="1"
+					    android:onClick="continueMemo"
+				        android:text="@string/continue_"
+				        android:textAllCaps="true" />
+				</LinearLayout>
+	    </RelativeLayout>
+	
+		<RelativeLayout 
+		    android:id="@+id/RelativeLayout1"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical" >
+		
+		    <TextView
+		        android:id="@+id/view_radius"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="false"
+		        android:layout_alignParentTop="false"
+		        android:paddingTop="4dp"
+		        android:text="@string/location_name"
+		        android:textAllCaps="true"
+		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:textColor="@android:color/white"
+		        android:textSize="16sp" />
+		
+		    <EditText
+		        android:id="@+id/newMemoLocation"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@+id/view_radius"
+		        android:layout_centerHorizontal="true"
+		        android:ems="10"
+		        android:inputType="textEmailSubject" >
+		    </EditText>
+		
+		    <LinearLayout
+		        android:id="@+id/buttonbarM"
+		        style="?android:attr/buttonBarStyle"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentBottom="true"
+		        android:layout_alignParentRight="false"
+		        android:gravity="bottom" >
+		
+		        <Button
+		            android:id="@+id/button1"
+		            style="?android:attr/buttonBarButtonStyle"
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="1"
+				    android:onClick="defaultClick"
+		            android:text="@string/default_"
+		            android:textAllCaps="true" />
+		
+		        <Button
+		            android:id="@+id/memoSaveButton"
+		            style="?android:attr/buttonBarButtonStyle"
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="1.75"
+		            android:onClick="saveMemoClick"
+		            android:text="@string/save_and_return"
+		            android:textAllCaps="true"
+		            android:textStyle="bold" />
+		
+		    </LinearLayout>
+		
+		    <CheckBox
+		        android:id="@+id/checkbox"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_below="@+id/newMemoLocation"
+		        android:text="@string/remember_loc"
+		        android:textSize="12sp"
+		        android:textStyle="italic" />
+		
+		    <TextView
+		        android:id="@+id/tv_Date"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_below="@+id/checkbox"
+		        android:paddingTop="4dp"
+		        android:text="@string/radius"
+		        android:textAllCaps="true"
+		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:textColor="@android:color/white"
+		        android:textSize="16sp" />
+		
+		    <SeekBar
+		        android:id="@+id/seekBar1"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_below="@+id/TextView02"
+		        android:max="975"
+		        android:minHeight="12dp"
+		        android:progress="75" />
+		
+		    <TextView
+		        android:id="@+id/viewmemobody"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_below="@+id/seekBar1"
+		        android:text="@string/m"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		    <TextView
+		        android:id="@+id/viewloctext"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentRight="true"
+		        android:layout_below="@+id/seekBar1"
+		        android:text="@string/k"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		    <TextView
+		        android:id="@+id/TextView02"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_below="@+id/tv_Date"
+		        android:gravity="center"
+		        android:paddingBottom="4dp"
+		        android:text="@string/mm"
+		        android:textAllCaps="false"
+		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:textColor="@android:color/white"
+		        android:textSize="16sp" />
+		</RelativeLayout>
+	</ViewFlipper>
+</LinearLayout>

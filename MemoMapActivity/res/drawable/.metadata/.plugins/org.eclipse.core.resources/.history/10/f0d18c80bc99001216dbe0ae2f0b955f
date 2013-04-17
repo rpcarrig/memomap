@@ -1,0 +1,135 @@
+package com.rpcarrig.memomapa;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
+public class CreateMemoActivity extends Activity {
+	private static final String TAG = "CreateMemoActivity";	
+	private Memo tempMemo = new Memo();
+	private GoogleMap googleMap;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.fragment_newmemobody);
+		
+		getFragmentManager().beginTransaction()
+			.add(R.id.create_mapcontainer, new MapFragment(), "map")
+			.commit();
+		getFragmentManager().beginTransaction()
+			.add(R.id.create_memocontainer, new MemoBody(), "map")
+			.commit();
+	}
+	
+	public void continueMemo(View view){
+		EditText editText = (EditText)findViewById(R.id.newmemo_body);
+		if(editText != null){
+			tempMemo.setMemoBody(editText.getText().toString());
+			//newMemoMarker.setTitle(editText.getText().toString());
+			//newMemoMarker.showInfoWindow();
+		}
+		else Log.d(TAG, "Can't find EditText.");
+		
+		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLongLocation, 11));
+		getFragmentManager().beginTransaction()
+			.setCustomAnimations(
+				R.animator.slide_in_frombottom, R.animator.slide_out_totop,
+				R.animator.slide_in_fromtop, R.animator.slide_out_tobottom)
+			.addToBackStack(null)
+			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoLoc())
+			.commit();
+		
+	}
+	
+	private void createMemo(){
+		Log.d(TAG, "createMemo");
+		tempMemo = new Memo();
+		
+		Marker marker = googleMap.addMarker(new MarkerOptions()
+				.position(latLongLocation));
+		
+    	getFragmentManager().beginTransaction()
+    		.setCustomAnimations(
+				R.animator.slide_in_fromleft, R.animator.slide_out_toright,
+				R.animator.slide_in_fromright, R.animator.slide_out_toleft)
+			.addToBackStack(null)
+			.replace(R.id.fragment_bottomcontainer, new Fragments.MemoBody())
+			.commit();
+	}
+	
+	public void defaultClick(View view){
+		SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar1);
+		seekBar.setProgress(75);
+	}
+	
+	
+	public static class Map extends MapFragment {
+		@Override
+		public void onResume(){
+			super.onResume();
+			googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
+		}
+	}
+	
+	public static class MemoBody extends Fragment {
+		private final String TAG = "NewMemoBodyFragment";
+		public MemoBody(){ }
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+				Bundle savedInstanceState) {
+			Log.d(TAG, "onCreateView");
+			return inflater.inflate(R.layout.fragment_newmemobody, container, false);
+		}
+	}
+	
+	public static class MemoLoc extends Fragment implements OnSeekBarChangeListener{
+		final String CLASS = "MemoLocFragment";
+		public MemoLoc(){ }
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+				Bundle savedInstanceState) {
+			Log.d(CLASS, "onCreateView");
+			return inflater.inflate(R.layout.fragment_newmemoloc, container, false);
+		}	
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			Log.d(TAG, "onProgressChanged");
+			TextView distance = (TextView)getActivity()
+					.findViewById(R.id.TextView02);
+			distance.setText((progress + 25) + " m");
+		}
+		
+		@Override
+		public void onResume(){
+			super.onResume();
+			SeekBar seekBar = (SeekBar)getActivity()
+					.findViewById(R.id.seekBar1);
+			seekBar.setOnSeekBarChangeListener(this);
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) { }
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) { }
+	}
+}

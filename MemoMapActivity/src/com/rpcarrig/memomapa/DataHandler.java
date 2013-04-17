@@ -345,7 +345,6 @@ public class DataHandler extends SQLiteOpenHelper {
 		String[] args    = new String[]{ String.valueOf(id) }, 
 				 columns = new String[]{ KEY_MID, KEY_MLOC, KEY_MBODY, 
 							KEY_MLAT, KEY_MLONG, KEY_MRAD, KEY_MDATE, KEY_PUBID, KEY_AID };
-
 		Cursor cursor = getWritableDatabase()
 				.query(table, columns, selection, args, null, null, null);
 		if (cursor != null) cursor.moveToFirst();
@@ -429,6 +428,7 @@ public class DataHandler extends SQLiteOpenHelper {
 			pw.println(m.getMemoDate());
 			pw.println(m.getPublicId());
 			pw.println(m.getAndroidId());
+
 			pw.flush();
 			pw.close();
 			fos.close();
@@ -437,6 +437,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Toast.makeText(MemoMap.getInstance(), file.toString(), Toast.LENGTH_LONG).show();
 	}
 	
 	public static String getAndroidId(){
@@ -447,4 +448,8 @@ public class DataHandler extends SQLiteOpenHelper {
 		return androidId;
 	}
 
+	
+	public void importMemo(String uri) {
+		
+	}
 }

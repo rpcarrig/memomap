@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/menu_editmemo"
+        android:title="@string/save_memo"
+        android:showAsAction="always|withText"
+        android:icon="@android:drawable/ic_menu_save" />
+</menu>

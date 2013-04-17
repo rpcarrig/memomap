@@ -45,6 +45,16 @@ public class Memo {
 		publicId	 = -1;
 		androidId    = "Unknown Android ID";
 	}
+	
+	public Memo(String loc, String body, double lat, double lon, int rad){
+		distance  = -1;
+		latitude  = lat;
+		longitude = lon;
+		radius 	  = rad;
+		memoBody  = body;
+		memoDate  = sdf.format(new Date());
+		locationName = loc;
+	}
 
 	/** This constructor is used when a new memo is created from the Create activity. */
 	public Memo(String loc, String body, double lat, double lon, int rad, String aId){

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;MemoMap Alpha/res/values/arrays.xml&apos; to &apos;array.xml&apos;" description="Rename resource &apos;arrays.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="res/values/arrays.xml" name="array.xml" stamp="1364682809449" updateReferences="true"/>
+</session>
