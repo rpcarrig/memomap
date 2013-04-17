@@ -1,0 +1,74 @@
+package com.rpcarrig.memomapa;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
+public class CreateMemoActivity extends Activity {
+	private static final String TAG = "CreateMemoActivity";	
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.fragment_newmemobody);
+		
+		getFragmentManager().beginTransaction()
+		.add(R.id.create_container, new MemoBody(), "map")
+		.commit();
+	}
+	
+	public static class MemoBody extends Fragment {
+		private final String TAG = "NewMemoBodyFragment";
+		public MemoBody(){ }
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+				Bundle savedInstanceState) {
+			Log.d(TAG, "onCreateView");
+			return inflater.inflate(R.layout.fragment_newmemobody, container, false);
+		}
+	}
+	
+	public static class MemoLoc extends Fragment 
+			implements OnSeekBarChangeListener{
+		final String CLASS = "MemoLocFragment";
+		public MemoLoc(){ }
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+				Bundle savedInstanceState) {
+			Log.d(CLASS, "onCreateView");
+			return inflater.inflate(R.layout.fragment_newmemoloc, container, false);
+		}	
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			Log.d(TAG, "onProgressChanged");
+			TextView distance = (TextView)getActivity()
+					.findViewById(R.id.TextView02);
+			distance.setText((progress + 25) + " m");
+		}
+		
+		@Override
+		public void onResume(){
+			super.onResume();
+			SeekBar seekBar = (SeekBar)getActivity()
+					.findViewById(R.id.seekBar1);
+			seekBar.setOnSeekBarChangeListener(this);
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) { }
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) { }
+	}
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="mapType">
+	    <item name="Normal" />
+	    <item name="Satellite" />
+	    <item name="Hybrid" />
+	    <item name="Terrain" />
+	    <item name="None" />
+	</string-array>
+	<string-array name="mapTypeValues">
+	    <item name="" />
+	    <item name="" />
+	</string-array>
+</resources>

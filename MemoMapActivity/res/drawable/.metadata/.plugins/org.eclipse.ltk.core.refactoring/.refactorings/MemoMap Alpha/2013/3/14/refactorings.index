@@ -1,0 +1,5 @@
+1364714502457	Rename resource 'animator'
+1364733783464	Rename field 'memoTitle'
+1364733795971	Rename local variable 'title'
+1364733851910	Rename method 'getMemoTitle'
+1364733869711	Rename method 'setMemoTitle'

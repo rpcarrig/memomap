@@ -1,0 +1,162 @@
+package com.rpcarrig.memomapa;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
+public class CreateMemoActivity extends Activity {
+	private static final String TAG = "CreateMemoActivity";
+	private static GoogleMap googleMap;
+	
+	double latitude,
+		   longitude;
+	int radius;
+	Circle circle;
+	LatLng location;
+	Marker marker;
+	SeekBar radiusBar;
+	String memoBody,
+		   locationName;
+	TextView bodyText,
+			 locNameText;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		
+		setContentView(R.layout.activity_creatememo);
+
+		Bundle bundle = getIntent().getExtras();
+		latitude  = bundle.getDouble("lat");
+		longitude = bundle.getDouble("lon");
+		location = new LatLng(latitude, longitude);
+		
+		GoogleMapOptions googleMapOptions = new GoogleMapOptions();
+		MapFragment mapFragment = MapFragment.newInstance(googleMapOptions);
+		
+		googleMapOptions.camera(new CameraPosition(location, 17, 0, 0));
+		getFragmentManager().beginTransaction()
+			.add(R.id.create_mapcontainer, mapFragment, "map")
+			.commit();
+		getFragmentManager().beginTransaction()
+			.add(R.id.create_memocontainer, new MemoBody(), "memo")
+			.commit();
+		
+		
+	}
+	
+	protected void onStart(){
+		super.onStart();
+		googleMap = ((MapFragment)getFragmentManager().findFragmentByTag("map")).getMap();
+		MarkerOptions markerOptions = new MarkerOptions();
+		marker = googleMap.addMarker(markerOptions.position(location));
+	}
+	
+	public void continueMemo(View view){
+		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+		
+		bodyText = (TextView)findViewById(R.id.memobodytext);
+		memoBody = bodyText.getText().toString();
+		
+		circle = googleMap.addCircle(new CircleOptions()
+			.center(location)
+			.fillColor(0x25AA0000)
+			.strokeColor(0xFFAA0000)
+			.strokeWidth(2)
+			.radius(100));
+		marker.setTitle(memoBody);
+		marker.showInfoWindow();
+		
+		getFragmentManager().beginTransaction()
+			.setCustomAnimations(
+				R.anim.slide_in_frombottom, R.anim.slide_out_totop,
+				R.anim.slide_in_fromtop, R.anim.slide_out_tobottom)
+			.replace(R.id.create_memocontainer, new MemoLoc())
+			.commit();	
+	}
+	
+	public void defaultClick(View view){
+		SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar1);
+		seekBar.setProgress(75);
+	}
+	
+	public void saveMemoClick(View view){
+		Memo newMemo = new Memo(locationName, memoBody, latitude, longitude, radius);
+	}
+	
+	
+	public static class Map extends MapFragment {
+		@Override
+		public void onResume(){
+			super.onResume();
+		}
+	}
+	
+	public static class MemoBody extends Fragment {
+		private final String TAG = "NewMemoBodyFragment";
+		public MemoBody(){ }
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+				Bundle savedInstanceState) {
+			Log.d(TAG, "onCreateView");
+			return inflater.inflate(R.layout.fragment_newmemobody, container, false);
+		}
+	}
+	
+	public static class MemoLoc extends Fragment implements OnSeekBarChangeListener{
+		final String CLASS = "MemoLocFragment";
+		public MemoLoc(){ }
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+				Bundle savedInstanceState) {
+			Log.d(CLASS, "onCreateView");
+			return inflater.inflate(R.layout.fragment_newmemoloc, container, false);
+		}	
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			Log.d(TAG, "onProgressChanged");
+			TextView distance = (TextView)getActivity()
+					.findViewById(R.id.TextView02);
+			distance.setText((progress + 25) + " m");
+		}
+		
+		@Override
+		public void onResume(){
+			super.onResume();
+			SeekBar seekBar = (SeekBar)getActivity()
+					.findViewById(R.id.seekBar1);
+			seekBar.setOnSeekBarChangeListener(this);
+			seekBar.setProgress(75);
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) { }
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) { }
+	}
+}
