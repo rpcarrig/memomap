@@ -3,24 +3,16 @@ package com.rpcarrig.memomapa;
 import android.text.format.Time;
 
 public class Favorite {
-	int id;
-	String
-		faveAddress,
-		faveDate,
-		faveName;
-	double
-		longitude,
-		latitude;
+	private int id;
+	private String faveAddress,
+				   faveDate,
+				   faveName;
+	private double longitude,
+				   latitude;
 		
 	public Favorite(){ }
 	
-	/**
-	 * This is the general purpose constructor.
-	 * @param name
-	 * @param addr
-	 * @param lat
-	 * @param lon
-	 */
+	/** This is the general purpose constructor. */
 	public Favorite(String name, String addr, double lat, double lon){
 		faveDate = new Time(Time.getCurrentTimezone()).toString();
 		
@@ -30,14 +22,7 @@ public class Favorite {
 		longitude 	= lon;
 	}
 	
-	/**
-	 * This constructor is for use by the database handler.
-	 * @param i
-	 * @param name
-	 * @param addr
-	 * @param lat
-	 * @param lon
-	 */
+	/** This constructor is for use by the database handler. */
 	public Favorite(int i, String name, String addr, double lat, double lon){
 		faveDate = new Time(Time.getCurrentTimezone()).toString();
 		

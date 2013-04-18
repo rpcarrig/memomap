@@ -2,7 +2,6 @@ package com.rpcarrig.memomapa;
 
 import java.io.IOException;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -26,9 +25,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChangeListener {
 
-	boolean     mCanGoBack = false;
+	boolean     mCanGoBack = false,
+				mPublicMemo = false;
 	Circle      mCircle;
-	CheckBox    mCheckBox;
+	CheckBox    mCheckBox,
+				mCheckPublic;
 	double      mLatitude,
 			    mLongitude;
 	GoogleMap   mGoogleMap;
@@ -51,13 +52,12 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		setContentView(R.layout.activity_creatememo_flip);
 		
-		ActionBar mActionBar = getActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
         SharedPreferences mSharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(MemoMap.getInstance());
 		int mMapType = Integer.parseInt(mSharedPreferences.getString("prefMapType", "2"));    
 	        
 		Bundle bundle = getIntent().getExtras();
+		mLocName   = bundle.getString("loc");
 		mLatitude  = bundle.getDouble("lat");
 		mLongitude = bundle.getDouble("lon");
 		mLatLongLocation = new LatLng(mLatitude, mLongitude);
@@ -132,6 +132,8 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 	public void continueMemo(View view){
 		mCanGoBack = true;
 		mBodyText = (EditText) findViewById(R.id.newmemo_body);
+		mCheckPublic = (CheckBox) findViewById(R.id.checkPublic);
+		if(mCheckPublic.isChecked()) mPublicMemo = true;
 		mMemoBody = mBodyText.getText().toString();
 		if(mBodyText.getText().toString().contentEquals("")) mMemoBody = "New Memo";
 		
@@ -145,6 +147,9 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		mMarker.setTitle(mMemoBody);
 		mMarker.showInfoWindow();
 		mViewFlipper.showNext();
+		
+		mLocNameText = (EditText)findViewById(R.id.newMemoLocation);
+		mLocNameText.setText(mLocName);
 	}
 
 	public void defaultClick(View view){
@@ -153,7 +158,6 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 	}
 	
 	public void saveMemoClick(View view) throws IOException{
-		mLocNameText = (EditText)findViewById(R.id.newMemoLocation);
 		mLocName = mLocNameText.getText().toString();
 		if(mLocName.contentEquals("")) mLocName = "[" + mLongitude + ", " + mLatitude + "]";
 		
@@ -166,15 +170,16 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		
 		mCheckBox = (CheckBox)findViewById(R.id.checkbox);
 		if(mCheckBox.isChecked()){
-			//mFaveAddress = "[Address]";
-			//Favorite fave = new Favorite(mLocName, mFaveAddress, mLatitude, mLongitude);
-			//DataHandler.getInstance(this).addFave(fave);
+			Favorite fave = new Favorite(mLocName, mLocName, mLatitude, mLongitude);
+			DataHandler.getInstance(MemoMap.getInstance()).addFave(fave);
+		}
+		
+		if(mPublicMemo){
 			new Thread( new Runnable(){
 				public void run(){
 					ServerHandler.upload(newMemo);
 				}
 			}).start();
-			
 		}
 		else {
 			DataHandler.getInstance(MemoMap.getInstance()).addMemo(newMemo);

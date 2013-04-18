@@ -42,12 +42,13 @@
     <string name="ok">OK</string>
     <string name="open_memo">Open Memo</string>
     <string name="pintowhere">Pin to where?</string>
+    <string name="publicmemo">Check here to upload this as a public memo.</string>
     <string name="radius">Radius</string>
     <string name="radius_a">25m</string>
     <string name="radius_b">50m</string>
     <string name="radius_c">100m</string>
     <string name="radius_info">What does this mean?</string>
-    <string name="remember_loc">Check here upload this as a public memo.</string>
+    <string name="remember_loc">Check here to save this location.</string>
     <string name="reset_view">Reset View</string>
     <string name="save_memo">Save Memo</string>
     <string name="save_and_return">Save and Return</string>

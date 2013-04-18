@@ -148,28 +148,25 @@ public class DataHandler extends SQLiteOpenHelper {
 	public void addPublicMemo(Memo memo) {
 		Log.d(CLASS, "addPublicMemo");
 		
-		boolean memoExists = false;
 		ArrayList<Memo> memoList = getAllMemos();
 		for(Memo m : memoList) {
-			if (m.getPublicId() == memo.getPublicId()) memoExists = true;
-			Log.d("Public memo", "List: " + m.getPublicId() + ", New: " + memo.getPublicId());
+			if (m.getPublicId() == memo.getPublicId()) {
+				deleteMemo(m);
+			}
 		}
-		if (!memoExists) {
-			ContentValues values = new ContentValues();
-			values.put(KEY_MLAT,   memo.getLatitude());
-			values.put(KEY_MLONG,  memo.getLongitude());
-			values.put(KEY_MLOC,   memo.getLocationName());
-			values.put(KEY_MBODY,  memo.getMemoBody());
-			values.put(KEY_MDATE,  memo.getMemoDate());
-			values.put(KEY_MRAD,   memo.getRadius());
-			values.put(KEY_PUBID,  memo.getPublicId());
-			values.put(KEY_AID,    getAndroidId());
-	
-			SQLiteDatabase db = getWritableDatabase();
-			db.insert(TABLE_MEMOS, null, values);
-			db.close();
-		}
-		exportMemo(memo);
+		ContentValues values = new ContentValues();
+		values.put(KEY_MLAT,   memo.getLatitude());
+		values.put(KEY_MLONG,  memo.getLongitude());
+		values.put(KEY_MLOC,   memo.getLocationName());
+		values.put(KEY_MBODY,  memo.getMemoBody());
+		values.put(KEY_MDATE,  memo.getMemoDate());
+		values.put(KEY_MRAD,   memo.getRadius());
+		values.put(KEY_PUBID,  memo.getPublicId());
+		values.put(KEY_AID,    getAndroidId());
+
+		SQLiteDatabase db = getWritableDatabase();
+		db.insert(TABLE_MEMOS, null, values);
+		db.close();
 	}
 
 	public void deleteFave(Favorite fave) {

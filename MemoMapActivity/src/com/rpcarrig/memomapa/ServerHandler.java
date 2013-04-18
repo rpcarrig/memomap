@@ -33,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class ServerHandler {
 	// method used to upload shared memos to the server database
 	public static void upload(Memo memo) {
@@ -131,6 +133,7 @@ public class ServerHandler {
 							 	 	  memoDate, key, androidId);
 					
 					DataHandler.getInstance(MemoMap.getInstance()).addPublicMemo(m);
+					Log.d("TAG", "Memo added");
 				}
 
 			} catch (JSONException e) {

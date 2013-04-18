@@ -45,23 +45,6 @@
 			        android:textColor="@android:color/white"
 			        android:textSize="16sp" />
 			
-			    <EditText
-			        android:id="@+id/newmemo_body"
-			        android:layout_width="match_parent"
-			        android:layout_height="fill_parent"
-			        android:layout_above="@+id/buttonbarB"
-			        android:layout_alignParentLeft="true"
-			        android:layout_below="@+id/memobodytext"
-			        android:layout_margin="6dp"
-			        android:ems="10"
-			        android:gravity="top"
-			        android:hint="@string/body_hint"
-			        android:inputType="textMultiLine"
-			        android:lines="5"
-			        android:maxLength="1000"
-			        android:minLines="2"
-			        android:textColor="@android:color/white" />
-			
 			    <LinearLayout
 			        android:id="@+id/buttonbarB"
 			        style="?android:attr/buttonBarStyle"
@@ -90,6 +73,36 @@
 				        android:text="@string/continue_"
 				        android:textAllCaps="true" />
 				</LinearLayout>
+
+			    <EditText
+			        android:id="@+id/newmemo_body"
+			        android:layout_width="match_parent"
+			        android:layout_height="fill_parent"
+			        android:layout_above="@+id/checkPublic"
+			        android:layout_below="@+id/memobodytext"
+			        android:layout_centerHorizontal="true"
+			        android:layout_margin="6dp"
+			        android:ems="10"
+			        android:gravity="top"
+			        android:hint="@string/body_hint"
+			        android:inputType="textMultiLine"
+			        android:lines="5"
+			        android:maxLength="1000"
+			        android:minLines="2"
+			        android:textColor="@android:color/white" >
+
+			        <requestFocus />
+			    </EditText>
+			    
+			    <CheckBox
+			        android:id="@+id/checkPublic"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_above="@+id/buttonbarB"
+			        android:layout_alignParentLeft="true"
+			        android:layout_alignRight="@+id/newmemo_body"
+			        android:text="@string/publicmemo" />
+
 	    </RelativeLayout>
 	
 		<RelativeLayout 

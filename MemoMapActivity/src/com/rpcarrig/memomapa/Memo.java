@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.Marker;
 
 public class Memo {
 	private boolean hasBeenRead,
+					isPublic,
 					isShared;
 	private int id,
 				publicId,
@@ -54,6 +55,8 @@ public class Memo {
 		memoBody  = body;
 		memoDate  = sdf.format(new Date());
 		locationName = loc;
+		
+		isPublic	  = false;
 	}
 
 	/** This constructor is used when a new memo is created from the Create activity. */
@@ -67,6 +70,8 @@ public class Memo {
 		memoDate	 = sdf.format(new Date());
 		publicId	 = -1;
 		androidId    = aId;
+		
+		isPublic	 = false;
 	}
 
 	/** This constructor is used when building memos within the Data Handler. */
@@ -81,6 +86,8 @@ public class Memo {
 		memoDate	 = date;
 		publicId	 = pubId;
 		androidId    = aId;
+		
+		isPublic	 = false;
 	}
 
 	/** This constructor is used with the Server Handler. */
@@ -95,6 +102,8 @@ public class Memo {
 		memoDate	 = date;
 		publicId	 = pubId;
 		androidId    = aId;
+		
+		isPublic	 = true;
 	}
 
 	public String toString(){
@@ -104,12 +113,17 @@ public class Memo {
 		return s;
 	}
 
+	public boolean isPublic()	   { 
+		if (publicId > 0) isPublic = true;
+		return isPublic;	  
+	}
+	
 	/**
 	 * Setter and getters!
 	 */
-
-	public boolean getSeen()	   { return hasBeenRead;  }
-	public boolean getShared()	   { return isShared;	  }
+	public boolean isSeen()	   	   { return hasBeenRead;  }
+	public boolean isShared()	   { return isShared;	  }
+	
 	public int getId()			   { return id; 		  }
 	public String getAndroidId()   { return androidId;	  }
 	public String getMemoBody()    { return memoBody;  	  }
