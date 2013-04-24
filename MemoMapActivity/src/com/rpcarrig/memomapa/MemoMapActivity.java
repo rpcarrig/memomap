@@ -2,7 +2,11 @@
  * Provides the main user interface for the MemoMap application.
  * 
  * @author  Ryan P. Carrigan, Drew Markle
+<<<<<<< HEAD
  * @version 2.10 24 April 2013
+=======
+ * @version 
+>>>>>>> branch 'master' of https://github.com/rpcarrig/memomap.git
  */
 
 package com.rpcarrig.memomapa;
