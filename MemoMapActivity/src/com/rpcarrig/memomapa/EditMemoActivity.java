@@ -1,10 +1,16 @@
+/**
+ * This activity provides an interface for the editing updating memos in the database.
+ * 
+ * @author  Ryan P. Carrigan
+ * @version 1.11 16 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,50 +18,45 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class EditMemoActivity extends Activity {
-	private static final String TAG = "EditMemoActivity";
-	Double mLatitude, mLongitude;
-	Integer mId, mRadius;
-	Memo memo;
-	String memoBody, locationName;
-	EditText eMemoBody, eLocName, eRadius;
-	TextView eLatitude, eLongitude;
+	Memo     memo;
+	String   memoBody,
+		     locationName;
+	EditText mMemoBody,
+			 mLocName, 
+			 mRadius;
+	TextView mLatitude, 
+			 mLongitude;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		Log.d(TAG, "onCreate");
 		setContentView(R.layout.activity_editmemo);
 		ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
-        mId = bundle.getInt("id");
         
-		memo = DataHandler.getInstance(MemoMap.getInstance()).getMemo(mId);
-		eMemoBody = (EditText)findViewById(R.id.edit_body);
-		eLocName = (EditText)findViewById(R.id.edit_locname);
-		eRadius = (EditText)findViewById(R.id.edit_rad);
-		eLatitude = (TextView)findViewById(R.id.view_lat);
-		eLongitude = (TextView)findViewById(R.id.view_long);
+		memo         = DataHandler.getInstance(MemoMap.getInstance()).getMemo(bundle.getInt("id"));
 		
-		
-		mLatitude = memo.getLatitude();
-		mLongitude = memo.getLongitude();
-		memoBody = memo.getMemoBody();
-		locationName = memo.getLocationName();
-		mRadius = memo.getRadius();
+		mMemoBody    = (EditText)findViewById(R.id.edit_body);
+		mLocName     = (EditText)findViewById(R.id.edit_locname);
+		mRadius      = (EditText)findViewById(R.id.edit_rad);
+		mLatitude    = (TextView)findViewById(R.id.view_lat);
+		mLongitude   = (TextView)findViewById(R.id.view_long);
 	}
 	
+	/* Sets the text fields with information from the memo. */
 	@Override
 	public void onResume(){
 		super.onResume();
-		eLatitude.setText(mLatitude.toString());
-		eLocName.setText(locationName);
-		eLongitude.setText(mLongitude.toString());
-		eMemoBody.setText(memoBody);
-		eRadius.setText(mRadius.toString());
+		mLatitude.setText(memo.getLatitude() + "");
+		mLocName.setText(memo.getLocationName());
+		mLongitude.setText(memo.getLongitude()+ "");
+		mMemoBody.setText(memo.getMemoBody());
+		mRadius.setText(memo.getRadius());
 	}
 	
+	/* Creates the action bar. */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -63,6 +64,7 @@ public class EditMemoActivity extends Activity {
 		return true;
 	}
 	
+	/* Saves the memo when the action bar button is touched. */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
@@ -75,10 +77,11 @@ public class EditMemoActivity extends Activity {
 		}
 	}
 	
+	/* Updates the memo in the database with the modified information. */
 	public void saveMemo(){
-		memo.setMemoBody(eMemoBody.getText().toString());
-		memo.setLocationName(eLocName.getText().toString());
-		memo.setRadius(Integer.parseInt(eRadius.getText().toString()));
+		memo.setMemoBody(mMemoBody.getText().toString());
+		memo.setLocationName(mLocName.getText().toString());
+		memo.setRadius(Integer.parseInt(mRadius.getText().toString()));
 		DataHandler.getInstance(MemoMap.getInstance()).updateMemo(memo);
 		finish();
 	}

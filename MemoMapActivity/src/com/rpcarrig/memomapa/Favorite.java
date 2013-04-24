@@ -1,3 +1,10 @@
+/**
+ * Encapsulates favorites from the fave database.
+ * 
+ * @author  Ryan P. Carrigan
+ * @version 1.22 23 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import android.text.format.Time;
@@ -22,7 +29,7 @@ public class Favorite {
 		longitude 	= lon;
 	}
 	
-	/** This constructor is for use by the database handler. */
+	/** This constructor is for use by the data handler. */
 	public Favorite(int i, String name, String addr, double lat, double lon){
 		faveDate = new Time(Time.getCurrentTimezone()).toString();
 		
@@ -32,6 +39,8 @@ public class Favorite {
 		latitude 	= lat;
 		longitude 	= lon;
 	}
+	
+	/* Mutator methods below. */
 	
 	public int getId()				{ return id; 			}	
 	public double getLatitude()		{ return latitude; 		}

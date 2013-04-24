@@ -1,3 +1,10 @@
+/**
+ * Provides the settings/preferences menu.
+ * 
+ * @author Ryan P. Carrigan
+ * @version 1.01 18 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import android.app.ActionBar;

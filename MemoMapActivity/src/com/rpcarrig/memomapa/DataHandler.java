@@ -1,3 +1,10 @@
+/**
+ * Handles all of the local database modifications. 
+ * 
+ * @author  Ryan P. Carrigan, Drew Markle
+ * @version 3.11 23 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import java.io.File;
@@ -16,15 +23,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.provider.Settings.Secure;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 public class DataHandler extends SQLiteOpenHelper {
-
-	private static final String CLASS = "DatabaseHandler";
-
 	public static final String
 		DATABASE_NAME = "memoMapMemoDatabase",
 		TABLE_MEMOS	  = "memos",
@@ -39,43 +42,35 @@ public class DataHandler extends SQLiteOpenHelper {
 		KEY_MLAT   = "memo_latitude",
 		KEY_MLONG  = "memo_longitude",
 		KEY_MRAD   = "memo_radius",
+		KEY_FID	   = "fave_id",
+		KEY_FNAME  = "fave_name",
+		KEY_FADDR  = "fave_address",
+		KEY_FLAT   = "fave_latitude",
+		KEY_FLONG  = "fave_longitude",
+		KEY_FDATE  = "fave_date";
 
-		KEY_FID	  = "fave_id",
-		KEY_FNAME = "fave_name",
-		KEY_FADDR = "fave_address",
-		KEY_FLAT  = "fave_latitude",
-		KEY_FLONG = "fave_longitude",
-		KEY_FDATE = "fave_date";
-	private static String androidId;
-
-	private String selectFromFaves = "SELECT  * FROM " + TABLE_FAVES;
-	private String selectFromMemos = "SELECT  * FROM " + TABLE_MEMOS;
-	private String selection;
-	private String table;
+	private String selectFromFaves = "SELECT  * FROM " + TABLE_FAVES,
+				   selectFromMemos = "SELECT  * FROM " + TABLE_MEMOS,
+				   selection,
+				   table;
 	
-	private static final int DATABASE_VERSION = 1;
-
-	private static DataHandler dbInstance = null;
+	private static final int DATABASE_VERSION = 1; // controls the database versioning
+	private static DataHandler dbInstance = null;  // allows only one DataHandler to exist
+	
+	
 	private DataHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		Log.d(CLASS, "DbHandler (constructor)");
 	}
 
+	/* Returns an instance of the data handler. */
 	public static DataHandler getInstance(Context context){
-		Log.d(CLASS, "getInstance");
-
 		if(dbInstance == null) dbInstance = new DataHandler(context);
 		return dbInstance;
 	}
-	/**
-	public DbHandler(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		Log.d(CLASS, "DbHandler (constructor)");
-	}*/
 
+	/* Creates the database tables. */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		Log.d(CLASS, "onCreate");		
 		String createMemoTable = "CREATE TABLE " + TABLE_MEMOS 
 				+ "(" 
 				+ KEY_MID 	 + " INTEGER PRIMARY KEY," 
@@ -102,19 +97,16 @@ public class DataHandler extends SQLiteOpenHelper {
 		db.execSQL(createFaveTable);
 	}
 
+	/* Upgrades the database when the version changes. */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Log.d(CLASS, "onUpgrade");
 		deleteAllFaves();
 		deleteAllMemos();
 		onCreate(db);
 	}
 
-	/**
-	 *  ALL C.R.U.D. OPERATIONS BELOW
-	 */
+	/* Adds a new favorite to the fave database. */
 	public void addFave(Favorite fave) {
-		Log.d(CLASS, "addFave");
 		ContentValues values = new ContentValues();
 		values.put(KEY_FADDR, fave.getFaveAddress());
 		values.put(KEY_FLAT,  fave.getLatitude());
@@ -126,8 +118,8 @@ public class DataHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	/* Adds a new private memo to the local database. */
 	public void addMemo(Memo memo) {
-		Log.d(CLASS, "addMemo");
 		ContentValues values = new ContentValues();
 		values.put(KEY_MLAT, 	memo.getLatitude());
 		values.put(KEY_MLONG, 	memo.getLongitude());
@@ -145,9 +137,8 @@ public class DataHandler extends SQLiteOpenHelper {
 		exportMemo(memo);
 	}
 	
+	/* Adds a downloaded public memo to the local database. */
 	public void addPublicMemo(Memo memo) {
-		Log.d(CLASS, "addPublicMemo");
-		
 		ArrayList<Memo> memoList = getAllMemos();
 		for(Memo m : memoList) {
 			if (m.getPublicId() == memo.getPublicId()) {
@@ -169,8 +160,8 @@ public class DataHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	/* Deletes a favorite from the fave database. */
 	public void deleteFave(Favorite fave) {
-		Log.d(CLASS, "deleteFave");
 		table	  = TABLE_FAVES;
 		selection = KEY_FID + "=?";
 		String[] whereArgs = { String.valueOf(fave.getId()) };
@@ -180,8 +171,8 @@ public class DataHandler extends SQLiteOpenHelper {
 		db.close();		
 	}
 
+	/* Deletes a memo from the memo database. */
 	public void deleteMemo(Memo memo) {
-		Log.d(CLASS, "deleteMemo");
 		table	  = TABLE_MEMOS;
 		selection = KEY_MID + "=?";
 		String[] whereArgs = { String.valueOf(memo.getId()) };
@@ -191,18 +182,18 @@ public class DataHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	/* Deletes the fave database table. */
 	public void deleteAllFaves(){
-		Log.d(CLASS, "deleteAllFaves");
 		getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_FAVES);
 	}
 
+	/* Deletes the memo database table. */
 	public void deleteAllMemos(){
-		Log.d(CLASS, "deleteAllMemos");
 		getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + TABLE_MEMOS);
 	}
 
+	/* Returns an unsorted ArrayList of all favorites in the fave database. */
 	public ArrayList<Favorite> getAllFaves() {
-		Log.d(CLASS, "getAllFaves");
 		Cursor cursor = getWritableDatabase().rawQuery(selectFromFaves, null);
 		ArrayList<Favorite> faveList = new ArrayList<Favorite>();
 		if(cursor.moveToFirst()){
@@ -219,9 +210,8 @@ public class DataHandler extends SQLiteOpenHelper {
 		return faveList;
 	}
 
+	/* Returns an unsorted ArrayList of all memos in the memo database. */
 	public ArrayList<Memo> getAllMemos() {
-		Log.d(CLASS, "getAllMemos");
-
 		ArrayList<Memo> memoList = new ArrayList<Memo>();
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectFromMemos, null);
@@ -245,6 +235,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		return memoList;
 	}
 
+	/* Returns an ArrayList of all memos in the memo database sorted by the shortest distance. */
 	public ArrayList<Memo> getAllClosestMemos(LatLng loc) {
 		ArrayList<Memo> memoList = new ArrayList<Memo>();
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -277,6 +268,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		return memoList;
 	}
 
+	/* Returns an ArrayList of all memos in the memo database sorted by a specified parameter. */
 	public ArrayList<Memo> getAllSortedMemos(String sortBy, boolean asc) {
 		if(asc) sortBy = sortBy.concat(" ASC");
 		Cursor cursor = getWritableDatabase().rawQuery(selectFromMemos
@@ -301,6 +293,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		return memoList;		
 	}
 
+	/* Returns the fave database entry of a specified ID as a Favorite object. */
 	public Favorite getFave(int id) {
 		table     = TABLE_FAVES;
 		selection = KEY_FID + "=?";
@@ -320,6 +313,7 @@ public class DataHandler extends SQLiteOpenHelper {
 		return fave;
 	}
 
+	/* Returns an array of the locations of memos in the database. */
 	public ArrayList<LatLng> getMemoLocations(){
 		ArrayList<LatLng> locArray = new ArrayList<LatLng>();
 		Cursor cursor = getWritableDatabase().rawQuery(selectFromMemos, null);
@@ -332,10 +326,10 @@ public class DataHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();	
-
 		return locArray;
 	}
 
+	/* Returns the memo database entry of a specified ID as a Memo object. */
 	public Memo getMemo(int id) {
 		table	  = TABLE_MEMOS;
 		selection = KEY_MID + "=?";
@@ -360,18 +354,21 @@ public class DataHandler extends SQLiteOpenHelper {
 		return memo;
 	}
 
+	/* Returns the number of favorites in the fave database. */
 	public int getFaveCount() {
 		Cursor cursor = getWritableDatabase().rawQuery(selectFromFaves, null);
 		cursor.close();
 		return cursor.getCount();
 	}
 
+	/* Returns the number of memos in the memo database. */
 	public int getMemoCount() {
 		Cursor cursor = getWritableDatabase().rawQuery(selectFromMemos, null);
 		cursor.close();
 		return cursor.getCount();
 	}
 
+	/* Updates a favorite in the fave database. */
 	public int updateFave(Favorite fave) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_FADDR, fave.getFaveAddress());
@@ -387,6 +384,7 @@ public class DataHandler extends SQLiteOpenHelper {
 				whereArgs);		
 	}
 
+	/* Updates a memo in to memo database. */
 	public int updateMemo(Memo memo) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_MLAT, 	memo.getLatitude());
@@ -404,6 +402,7 @@ public class DataHandler extends SQLiteOpenHelper {
 				whereArgs);
 	}
 	
+	/* Exports a Memo object to a memo file. */
 	public void exportMemo(Memo m) {
 		String filename = "memomap_" + m.getId() + ".memo";
 		
@@ -437,16 +436,9 @@ public class DataHandler extends SQLiteOpenHelper {
 		Toast.makeText(MemoMap.getInstance(), file.toString(), Toast.LENGTH_LONG).show();
 	}
 	
+	/* Returns the device's unique Android ID. */
 	public static String getAndroidId(){
-		if (androidId == null) {
-			androidId = Secure.getString(MemoMap.getInstance().getContentResolver(), 
-									     Secure.ANDROID_ID);
-		}
-		return androidId;
+		return Secure.getString(MemoMap.getInstance().getContentResolver(), Secure.ANDROID_ID);
 	}
 
-	
-	public void importMemo(String uri) {
-		
-	}
 }

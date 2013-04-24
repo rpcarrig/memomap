@@ -61,6 +61,7 @@
     <string name="tryagain">No results found. Try again?</string>
     <string name="view_faves">Favorite Places</string>
     <string name="view_memos">View Memos</string>
+    <string name="view_reset">View reset.</string>
     <string name="waiting">Waiting for location fix&#8230;</string>
 
     <string name="crash_toast_text">MemoMap has crashed! But don\'t worry, the developer is on top of it.</string>

@@ -57,7 +57,7 @@
         </activity>
         
         <activity
-            android:name="com.rpcarrig.memomapa.CreateMemoFlipperActivity"
+            android:name="com.rpcarrig.memomapa.CreateMemoActivity"
             android:label="@string/create_memo" />
         
 		<activity
