@@ -1,13 +1,8 @@
-/*
- *Written By:Drew Markle
- *The server Handler handles all the interactions between the 
- *mobile application and the database server that is in the cloud. 
- * It performs two operations necessary for the social aspect of the
- * application to function properly. It uploads memos to the server's
- * database and also retrieves information from the server database
+/**
+ * Handles all the interactions between the app and the database server that is in the cloud.
  * 
- * First Created: 4/4/13
- * 
+ * @author  Ryan P. Carrigan, Drew Markle
+ * @version 1.20 18 April 2013
  */
 
 package com.rpcarrig.memomapa;
@@ -36,7 +31,8 @@ import org.json.JSONObject;
 import android.util.Log;
 
 public class ServerHandler {
-	// method used to upload shared memos to the server database
+	
+	/* Upload shared memos to the server database. */
 	public static void upload(Memo memo) {
 		String urlUpload = "http://memomapalpha-memomap.rhcloud.com/mysql_upload.php";
 		// BufferedReader in = null;
@@ -75,8 +71,7 @@ public class ServerHandler {
 
 	}
 
-	// method that downloads memos from the database server and places them into
-	// the client-side database
+	/* Downloads memo from the database server to the local database. */
 	public static void download() {
 		String urlDownload = "http://memomapalpha-memomap.rhcloud.com/mysql_download.php";
 

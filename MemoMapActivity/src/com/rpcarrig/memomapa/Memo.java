@@ -1,8 +1,8 @@
 /**
- * Memo.java
+ * Encapsulates memos from the memo database.
  * 
  * @author  Ryan P. Carrigan
- * @version 1.1 (first created 21 March 2013)
+ * @version 2.14 18 April 2013
  */
 
 package com.rpcarrig.memomapa;
@@ -35,6 +35,7 @@ public class Memo {
 				   locationName;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
 
+	/* Default constructor creates a memo with dummy information. */
 	public Memo(){
 		id 			 = -1;
 		locationName = "Unknown Location";
@@ -45,18 +46,6 @@ public class Memo {
 		memoDate	 = sdf.format(new Date());
 		publicId	 = -1;
 		androidId    = "Unknown Android ID";
-	}
-	
-	public Memo(String loc, String body, double lat, double lon, int rad){
-		distance  = -1;
-		latitude  = lat;
-		longitude = lon;
-		radius 	  = rad;
-		memoBody  = body;
-		memoDate  = sdf.format(new Date());
-		locationName = loc;
-		
-		isPublic	  = false;
 	}
 
 	/** This constructor is used when a new memo is created from the Create activity. */
@@ -106,6 +95,7 @@ public class Memo {
 		isPublic	 = true;
 	}
 
+	/* Returns a String with the memo information on a line. */
 	public String toString(){
 		String s;
 		s = String.format(Locale.getDefault(), "[%s] %s -- (%f, %f)", 
@@ -113,14 +103,11 @@ public class Memo {
 		return s;
 	}
 
+	/* Mutator methods below. */
 	public boolean isPublic()	   { 
 		if (publicId > 0) isPublic = true;
 		return isPublic;	  
 	}
-	
-	/**
-	 * Setter and getters!
-	 */
 	public boolean isSeen()	   	   { return hasBeenRead;  }
 	public boolean isShared()	   { return isShared;	  }
 	

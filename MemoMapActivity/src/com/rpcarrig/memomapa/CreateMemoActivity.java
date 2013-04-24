@@ -1,3 +1,10 @@
+/**
+ * This activity provides an interface for the creation of new Memos into the database.
+ * 
+ * @author Ryan P. Carrigan
+ * @version 2.10 18 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import java.io.IOException;
@@ -17,30 +24,24 @@ import android.widget.ViewFlipper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChangeListener {
-
-	boolean     mCanGoBack = false,
+public class CreateMemoActivity extends Activity implements OnSeekBarChangeListener {
+	boolean     mCanGoBack  = false,
 				mPublicMemo = false;
 	Circle      mCircle;
 	CheckBox    mCheckBox,
 				mCheckPublic;
-	double      mLatitude,
-			    mLongitude;
 	GoogleMap   mGoogleMap;
-	int         mRadius, 
-    			mOldProgress;
+	int         mRadius;
 	LatLng      mLatLongLocation;
 	Marker      mMarker;
-	SeekBar     mSeekBar;
-	String      deviceId, 
-				mFaveAddress, 
-				mMemoBody, 
+	String      mMemoBody, 
 				mLocName;
 	EditText    mBodyText, 
 				mLocNameText;
@@ -54,57 +55,55 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		
         SharedPreferences mSharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(MemoMap.getInstance());
-		int mMapType = Integer.parseInt(mSharedPreferences.getString("prefMapType", "2"));    
 	        
 		Bundle bundle = getIntent().getExtras();
-		mLocName   = bundle.getString("loc");
-		mLatitude  = bundle.getDouble("lat");
-		mLongitude = bundle.getDouble("lon");
-		mLatLongLocation = new LatLng(mLatitude, mLongitude);
+		mLocName = bundle.getString("loc");
+		mLatLongLocation = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lon"));
 		
 		mGoogleMap = ((MapFragment)getFragmentManager()
 				.findFragmentById(R.id.create_map)).getMap();
-		mGoogleMap.setMapType(mMapType);
+		mGoogleMap.setMapType(Integer.parseInt(mSharedPreferences.getString("prefMapType", "2")));
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLongLocation, 17));
 	    
-		mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLongLocation));
-		
+		mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLongLocation)
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin4_yellow)));
+		mRadius = 100;
 		mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper1);
 		mViewFlipper.setFlipInterval(2500);
 		mViewFlipper.setInAnimation(MemoMap.getInstance(), android.R.anim.slide_in_left);
 		mViewFlipper.setOutAnimation(MemoMap.getInstance(), android.R.anim.slide_out_right);
 	}
 	
+	/* Sets the seek bar on-change listener. */
 	@Override
 	protected void onStart(){
 		super.onStart();
-		mSeekBar = (SeekBar)findViewById(R.id.seekBar1);
-		mSeekBar.setOnSeekBarChangeListener(this);
+		((SeekBar) findViewById(R.id.seekBar1)).setOnSeekBarChangeListener(this);
 	}
 	
+	/* Allows the back button to be used to flip the view back. */
 	@Override
 	public void onBackPressed(){
 		if(mCanGoBack){
 			mCanGoBack = false;
 			mCircle.remove();
 			mGoogleMap.animateCamera(CameraUpdateFactory.zoomIn());
-			mMarker.hideInfoWindow();
+			mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLongLocation)
+					.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.pin4_yellow)));
 			mViewFlipper.showPrevious();
 		}
 		else finish();
 	}
 	
+	/* Adjusts the radius circle when the seek bar changes. */
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		progress = (mSeekBar.getProgress() + 25);
-		mCircle.setRadius(progress);
-		
-		TextView distance = (TextView) findViewById(R.id.TextView02);
-		distance.setText((progress) + " m");
-		
-		mOldProgress = progress;
+		mCircle.setRadius((((SeekBar)findViewById(R.id.seekBar1)).getProgress() + 25));
+		((TextView) findViewById(R.id.TextView02)).setText((progress + 25) + " m");
 	}
 	
+	/* Changes the circle's color when the seekbar is touched. */
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		mCircle.setFillColor(0x000000);
@@ -112,6 +111,7 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		mCircle.setStrokeWidth(4);
 	}
 	
+	/* Adjusts the circle and the zoom level after the radius has been adjusted. */
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		if(mCircle.getRadius() < 250) mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
@@ -125,15 +125,21 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		mRadius = (int) mCircle.getRadius();
 	}
 	
+	/* Closes the activity when the Cancel button is pressed. */
 	public void cancelMemo(View view){
 		finish();
 	}
 	
+	/* Sets parameters when the continue button is pressed. */
 	public void continueMemo(View view){
 		mCanGoBack = true;
 		mBodyText = (EditText) findViewById(R.id.newmemo_body);
 		mCheckPublic = (CheckBox) findViewById(R.id.checkPublic);
-		if(mCheckPublic.isChecked()) mPublicMemo = true;
+		if(mCheckPublic.isChecked()) {
+			mMarker = mGoogleMap.addMarker(new MarkerOptions().position(mLatLongLocation)
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin4_green)));
+			mPublicMemo = true;
+		}
 		mMemoBody = mBodyText.getText().toString();
 		if(mBodyText.getText().toString().contentEquals("")) mMemoBody = "New Memo";
 		
@@ -152,25 +158,27 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 		mLocNameText.setText(mLocName);
 	}
 
+	/* Returns the radius to the default progress. */
 	public void defaultClick(View view){
-		mSeekBar.setProgress(75);
+		((SeekBar) findViewById(R.id.seekBar1)).setProgress(75);
 		mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMarker.getPosition(), 16));
 	}
 	
+	/* Saves the memo to the database. */
 	public void saveMemoClick(View view) throws IOException{
 		mLocName = mLocNameText.getText().toString();
-		if(mLocName.contentEquals("")) mLocName = "[" + mLongitude + ", " + mLatitude + "]";
+		if(mLocName.contentEquals("")) mLocName = "[" + mLatLongLocation.longitude + 
+				", " + mLatLongLocation.latitude + "]";
 		
-		mSeekBar = (SeekBar)findViewById(R.id.seekBar1);
 		mCircle.setRadius(mRadius);
-		mRadius = mSeekBar.getProgress();
+		mRadius = ((SeekBar)findViewById(R.id.seekBar1)).getProgress();
 		
-		final Memo newMemo = new Memo(mLocName, mMemoBody, mLatitude, mLongitude, mRadius,
-									  DataHandler.getAndroidId());
-		
+		final Memo newMemo = new Memo(mLocName, mMemoBody, mLatLongLocation.latitude,
+				mLatLongLocation.longitude, mRadius, DataHandler.getAndroidId());
 		mCheckBox = (CheckBox)findViewById(R.id.checkbox);
 		if(mCheckBox.isChecked()){
-			Favorite fave = new Favorite(mLocName, mLocName, mLatitude, mLongitude);
+			Favorite fave = new Favorite(mLocName, mLocName, mLatLongLocation.latitude,
+					mLatLongLocation.longitude);
 			DataHandler.getInstance(MemoMap.getInstance()).addFave(fave);
 		}
 		
@@ -181,10 +189,7 @@ public class CreateMemoFlipperActivity extends Activity implements OnSeekBarChan
 				}
 			}).start();
 		}
-		else {
-			DataHandler.getInstance(MemoMap.getInstance()).addMemo(newMemo);
-		}
-
+		else DataHandler.getInstance(MemoMap.getInstance()).addMemo(newMemo);
 		finish();
 	}
 }

@@ -1,12 +1,8 @@
 /**
- * MemoAdapter.java
+ * MemoAdapters are used to format each entry in the main UI's ListView.
  * 
- * A MemoAdapter is an extension of ArrayAdapter which only accepts arrays of 
- * Memo objects. MemoAdapters are used in conjunction with a memo list item 
- * layout to format each entry in the ListView.
- * 
- * @version 1.1 (first created 22 March 2013)
  * @author  Ryan P. Carrigan
+ * @version 1.12 18 April 2013
  */
 
 package com.rpcarrig.memomapa;
@@ -16,7 +12,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,54 +21,45 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MemoAdapter extends ArrayAdapter<Memo>{
-	private static final String TAG = "MemoAdapter";
-	
 	private ArrayList<Memo> memoArray; 
 	private Context currentContext;
 	private LatLng location;
 
-	
+	/* Only constructor for a MemoAdapter. */
 	public MemoAdapter(Context context, int rId, ArrayList<Memo> items, LatLng loc){
 		super(context, rId, items);	
-		Log.d(TAG, "constructor");
 		currentContext  = context;
 		if(loc != null)
 			location = new LatLng(loc.latitude, loc.longitude);
 		else location = new LatLng(-98.5795, 39.8282);
-		memoArray       = items;
+		memoArray = items;
 	}
 	
+	/* Returns a string representing a double as a measurement in meters. */
 	private String formatM(double d){
 		DecimalFormat formatter = new DecimalFormat("###");
 		return formatter.format(d) + "m";
 	}
 	
-	/**
-	 * formatKm appears to convert meters to kilometers.
-	 * @param d: the double value of meters
-	 * @return:  a String containing the value in km
-	 */
+	/* Returns a string representing a double as a measurement in kilometers. */
 	private String formatKm(double d){
 		DecimalFormat formatter = new DecimalFormat("###,###.##");
 		d = d/1000;
 		return formatter.format(d) + "km";
 	}
 	
-	/**
-	 * setDistColor affects the color of the text on the ListView item 
-	 * indicating its distance from the currentLocation. There are four
-	 * customizable levels of distance which can be assigned different colors
-	 * to apply. One example would be that, as the distance gets smeller,
-	 * the color goes from red to green.
-	 * @param text: the TextView whose color is to be set
-	 * @param dist: the distance value affecting the color change
-	 */
+	/* Sets the color of the distance based on how far away it is. */
 	private void setDistColor(TextView text, double dist){
-		int closest = 250,  closestColor = Color.GREEN,
-			closer  = 1000, closerColor  = Color.parseColor("#ADFF2F"),
-			close   = 2500, closeColor   = Color.YELLOW,
-			far     = 5000, farColor	 = Color.parseColor("#FFA500"),
-			textColor,	    distantColor = Color.RED;
+		int closest      = 250,
+			closestColor = Color.GREEN,
+			closer       = 1000,
+			closerColor  = Color.parseColor("#ADFF2F"),
+			close        = 2500,
+			closeColor   = Color.YELLOW,
+			far          = 5000,
+			farColor	 = Color.parseColor("#FFA500"),
+			textColor,
+			distantColor = Color.RED;
 		
 		if(dist <= closest)					  textColor = closestColor;	else
 		if(dist >  closest && dist <= closer) textColor = closerColor;	else
@@ -84,9 +70,7 @@ public class MemoAdapter extends ArrayAdapter<Memo>{
 		text.setTextColor(textColor);
 	}
 		
-	/**
-	 * getView
-	 */
+	/* Formats the view. */
 	public View getView(int position, View convertView, ViewGroup parents){
 		View view = convertView;
 		

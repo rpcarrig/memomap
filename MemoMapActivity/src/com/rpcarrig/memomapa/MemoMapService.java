@@ -1,25 +1,28 @@
+/**
+ * Service that runs in the background, downloading new memos and notifying when nearby.
+ * 
+ * @author  Ryan P. Carrigan
+ * @version 1.80 24 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.LatLng;
 
 public class MemoMapService extends Service implements LocationListener {
 	private static final String TAG = "MemoMapService";
@@ -27,30 +30,27 @@ public class MemoMapService extends Service implements LocationListener {
 	boolean canGetLocation = false,
 			isGpsEnabled = false,
 			isNetworkEnabled = false;
-	static double latitude, longitude;
-	int	counter	= 0, mId = 0;
-	AlertDialog dialog;
-	private Location location, lastLocation;
+	private Location location;
 	private LocationManager locationManager;
-	private Notification.Builder ongoingNote, newMemoNote;
+	private Notification.Builder ongoingNote;
 	private NotificationManager noteManager;
 
-	private final IBinder binder = new GpsBinder();
+	private final IBinder binder = new MemoMapServiceBinder();
 
 	private static final long
 		MIN_DISTANCE_CHANGE	= 10,
 		MIN_MS_BETWEEN_UPDATES = 1000 * 60 * 1;
 
-	/**
-	 * 
-	 */
+	/* Empty constructor required for binding services. */
 	public MemoMapService(){ }
 
+	/* Runs when the service is bound. */
 	@Override
 	public IBinder onBind(Intent intent) {
 		return binder;
 	}
 
+	/* Starts the running notification. */
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -59,6 +59,7 @@ public class MemoMapService extends Service implements LocationListener {
 		startForeground(1, ongoingNote.getNotification());
 	}
 
+	/* Cancels the running notification. */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -66,16 +67,12 @@ public class MemoMapService extends Service implements LocationListener {
 		if(locationManager != null) locationManager.removeUpdates(MemoMapService.this);
 	}
 
+	/* Runs whenever the location changes. */
 	@Override
-	public void onLocationChanged(Location arg0) {
+	public void onLocationChanged(Location loc) {
 		Log.d(TAG, "onLocationChanged");
-		if (locationManager != null){
-			location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if(location != null){
-				latitude = location.getLatitude();
-				longitude = location.getLongitude();
-			}
-		}
+		location = loc;
+		
 		ongoingNote.setTicker("Location changed. MemoMap is searching...");
 		noteManager.notify(1, ongoingNote.getNotification());	
 
@@ -83,86 +80,60 @@ public class MemoMapService extends Service implements LocationListener {
 		ArrayList<Memo> memoList = DataHandler.getInstance(this).getAllMemos();
 		int i = 2;
 		for (Memo m : memoList) {
-			Location.distanceBetween(latitude, longitude, m.getLatitude(), 
-					m.getLongitude(), results);
+			Location.distanceBetween(location.getLatitude(), location.getLongitude(),
+									 m.getLatitude(), m.getLongitude(), results);
 			if (results[0] <= m.getRadius()) noteManager.notify(i, memoNote(m));
 			i++;
 		}
+		downloadMemos();
 	}
 
+	/* Called when the GPS provider is disabled by the user. */
 	@Override
-	public void onProviderDisabled(String arg0) { }
-	@Override
-	public void onProviderEnabled(String arg0) { }
+	public void onProviderDisabled(String provider) { }
 
+	/* Called when the GPS provider is enabled by the user. */
+	@Override
+	public void onProviderEnabled(String provider) { }
+
+	/* Called when the GPS provider status changes. */
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+	/* Called when the service starts at boot. */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId){
 		return Service.START_STICKY;
 	}
 
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) { }
-
-	/**
-	 * 
-	 */
-
-	public static double distanceTo(LatLng loc){
-		float[] results = {0};
-		Location.distanceBetween(latitude, longitude, loc.latitude, loc.longitude, results);
-		return results[0];	
-	}
-	
+	/* Updates the location with the last known coordinates. */
 	public Location getFreshLocation(){
-		lastLocation = location;
+		Location lastLocation = new Location(location);
 
-		Log.d(TAG, "geoLocation");
-		if( !isGpsEnabled && !isNetworkEnabled){
-			//no GPS or network
-			Log.e(CONNECTIVITY_SERVICE, "no GPS or network");
-		}
-		else{
-			this.canGetLocation = true;
-
-			// If the network provider is available, get its location first.
+		if(!isGpsEnabled && !isNetworkEnabled)Log.e(CONNECTIVITY_SERVICE, "no GPS or network");
+		
+		else if (locationManager != null) {
+			canGetLocation = true;
 			if(isNetworkEnabled){
-				Log.d("geoLocation", "Network is enabled.");
-				if (locationManager != null){
-					location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					if(location != null){
-						latitude = location.getLatitude();
-						longitude = location.getLongitude();
-					}
-				}
+				location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			}
-
-			// If the GPS is also available, get coordinates using GPS services.
 			if(isGpsEnabled){
-				Log.d("geoLocation", "GPS is enabled.");
-				if (locationManager != null){
-					location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-					if(location != null){
-						latitude = location.getLatitude();
-						longitude = location.getLongitude();
-					}
-				}
+				location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			}
 		}
-
-		if(isBetterLocation(location, lastLocation)) return location;
+		if (isBetterLocation(location, lastLocation)) return location;
 		else return lastLocation;
 	}
 	
+	/* Initializes the GPS services. */
 	public void startGps(){
-		Log.d(TAG, "startGps");
 		try{
-			locationManager	= (LocationManager)this.getSystemService(LOCATION_SERVICE);
-			isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			locationManager  = (LocationManager) getSystemService(LOCATION_SERVICE);
+			isGpsEnabled     = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
 					MIN_MS_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE, this);	
-
 			location = getFreshLocation();
 		}
 		catch (Exception e){
@@ -172,69 +143,58 @@ public class MemoMapService extends Service implements LocationListener {
 
 		Intent intent = new Intent(this, MemoMapActivity.class);
 		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-		newMemoNote = new Notification.Builder(this);
 		ongoingNote = new Notification.Builder(this)
 		        .setContentTitle("MemoMap")
 		        .setContentText("Looking for memos...")
 		        .setContentIntent(pIntent)
 		        .setSmallIcon(R.drawable.ic_launcher);
 	}
-
-	public void showSettingsAlert(){
-		Log.d(TAG, "showSettingsAlert");
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-
-		alertDialog.setMessage("Your GPS is not available. " +
-				"Please verify that GPS is enabled in your device's settings.");
-		alertDialog.setTitle("GPS Error");
-
-		alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-				startActivity(intent);
-			}
-		});
-		alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
-	}
-
+	
+	/* Stops listening for location updates. */
 	public void stopGps(){
 		locationManager.removeUpdates(this);
 	}
 
+	/* Returns a notification for a memo. */
 	public Notification memoNote(Memo m){
-		String s = "@" + m.getLocationName() + ": " + m.getMemoBody();
-
-		newMemoNote.setAutoCancel(true);
-		newMemoNote.setContentText(m.getLocationName());
-		newMemoNote.setContentTitle(m.getMemoBody());
-		newMemoNote.setLights(0xFFFFFF00, 500, 500);
-		newMemoNote.setTicker(s);
-		newMemoNote.setVibrate(new long[]{100, 200, 100, 200});
-		newMemoNote.setSmallIcon(R.drawable.post_it3b);
-
-		Notification memoNote = newMemoNote.getNotification();
 		Intent intent = new Intent(this, OpenMemoActivity.class);
 		intent.putExtra("id", m.getId());
-		memoNote.contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
-		return memoNote;
+		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+		
+		Notification.Builder newMemoNote = new Notification.Builder(this)
+			.setAutoCancel(true)
+			.setContentIntent(pIntent)
+			.setContentText(m.getLocationName())
+			.setContentTitle(m.getMemoBody())
+			.setLights(0xFFFFFF00, 750, 250)
+			.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+			.setTicker("@" + m.getLocationName() + ": " + m.getMemoBody())
+			.setVibrate(new long[]{100, 200, 100, 200})
+			.setSmallIcon(R.drawable.post_it3b);
+		return newMemoNote.getNotification();
+	}
+	
+	/* Downloads memos from the remote server. */
+	public void downloadMemos(){
+		new Thread(new Runnable(){
+			public void run(){
+				ServerHandler.download();
+			}
+		}).start();
 	}
 
-	public class GpsBinder extends Binder{
+	/* Allows binding of the service. */
+	public class MemoMapServiceBinder extends Binder{
 		MemoMapService getService(){
 			return MemoMapService.this;
 		}
 	}
 
-	/** Determines whether one Location reading is better than the current Location fix
-	  * @param location  The new Location that you want to evaluate
-	  * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-	  */
+	/**
+	 * The following two methods were modified from code provided by Google.
+	 */
+	
+	/** Determines whether one Location reading is better than the current Location fix. */
 	protected boolean isBetterLocation(Location location, Location currentBestLocation) {
 		Log.d(TAG, "Comparing (" + location.getLongitude() + ", " + location.getLatitude() + ")");
 

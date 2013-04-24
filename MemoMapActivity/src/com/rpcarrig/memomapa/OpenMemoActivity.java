@@ -1,3 +1,10 @@
+/**
+ * Provides the interface for viewing memos from the notification.
+ * 
+ * @author  Ryan P. Carrigan
+ * @version 1.01 18 April 2013
+ */
+
 package com.rpcarrig.memomapa;
 
 import android.app.Activity;
@@ -12,6 +19,7 @@ public class OpenMemoActivity extends Activity {
 			 lon,
 			 radius;
 	
+	/* Sets fields to the data from the memo. */
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_openmemo);

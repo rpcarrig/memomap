@@ -290,42 +290,10 @@ containing a value of this type.
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
-        public static final int icon_png_grey1=0x7f020001;
-        public static final int icon_png_grey2=0x7f020002;
-        public static final int icon_png_grey3=0x7f020003;
-        public static final int memo1=0x7f020004;
-        public static final int memo2=0x7f020005;
-        public static final int pin2_blue=0x7f020006;
-        public static final int pin2_blue2=0x7f020007;
-        public static final int pin2_green=0x7f020008;
-        public static final int pin2_orange=0x7f020009;
-        public static final int pin2_purple=0x7f02000a;
-        public static final int pin2_red=0x7f02000b;
-        public static final int pin2_yellow=0x7f02000c;
-        public static final int pin3_blue=0x7f02000d;
-        public static final int pin3_blue2=0x7f02000e;
-        public static final int pin3_green=0x7f02000f;
-        public static final int pin3_orange=0x7f020010;
-        public static final int pin3_purple=0x7f020011;
-        public static final int pin3_red=0x7f020012;
-        public static final int pin3_yellow=0x7f020013;
-        public static final int pin4_blue=0x7f020014;
-        public static final int pin4_blue2=0x7f020015;
-        public static final int pin4_green=0x7f020016;
-        public static final int pin4_orange=0x7f020017;
-        public static final int pin4_purple=0x7f020018;
-        public static final int pin4_red=0x7f020019;
-        public static final int pin4_yellow=0x7f02001a;
-        public static final int pinr4_blue2=0x7f02001b;
-        public static final int post_it1=0x7f02001c;
-        public static final int post_it2=0x7f02001d;
-        public static final int post_it3b=0x7f02001e;
-        public static final int post_it4=0x7f02001f;
-        public static final int post_it_pin1=0x7f020020;
-        public static final int post_it_pin2=0x7f020021;
-        public static final int post_it_pin3b=0x7f020022;
-        public static final int post_it_pin4=0x7f020023;
-        public static final int post_it_pin5=0x7f020024;
+        public static final int pin4_blue=0x7f020001;
+        public static final int pin4_green=0x7f020002;
+        public static final int pin4_yellow=0x7f020003;
+        public static final int post_it3b=0x7f020004;
     }
     public static final class id {
         public static final int LongLatLayout=0x7f060032;
@@ -511,14 +479,14 @@ containing a value of this type.
          */
         public static final int common_signin_button_text_long=0x7f07000d;
         public static final int continue_=0x7f07001d;
-        public static final int crash_dialog_comment_prompt=0x7f070054;
-        public static final int crash_dialog_ok_toast=0x7f070055;
-        public static final int crash_dialog_text=0x7f070053;
-        public static final int crash_dialog_title=0x7f070052;
-        public static final int crash_notif_text=0x7f070051;
-        public static final int crash_notif_ticker_text=0x7f07004f;
-        public static final int crash_notif_title=0x7f070050;
-        public static final int crash_toast_text=0x7f07004e;
+        public static final int crash_dialog_comment_prompt=0x7f070055;
+        public static final int crash_dialog_ok_toast=0x7f070056;
+        public static final int crash_dialog_text=0x7f070054;
+        public static final int crash_dialog_title=0x7f070053;
+        public static final int crash_notif_text=0x7f070052;
+        public static final int crash_notif_ticker_text=0x7f070050;
+        public static final int crash_notif_title=0x7f070051;
+        public static final int crash_toast_text=0x7f07004f;
         public static final int create_here=0x7f07001e;
         public static final int create_memo=0x7f07001f;
         public static final int create_memo_msg=0x7f070020;
@@ -569,7 +537,8 @@ containing a value of this type.
         public static final int tryagain=0x7f07004a;
         public static final int view_faves=0x7f07004b;
         public static final int view_memos=0x7f07004c;
-        public static final int waiting=0x7f07004d;
+        public static final int view_reset=0x7f07004d;
+        public static final int waiting=0x7f07004e;
     }
     public static final class style {
         /** 
